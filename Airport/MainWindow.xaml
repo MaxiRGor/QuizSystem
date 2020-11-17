@@ -1,0 +1,608 @@
+﻿<Window x:Class="Airport.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Airport"
+        mc:Ignorable="d"
+        xmlns:ui="http://schemas.modernwpf.com/2019"
+        ui:WindowHelper.UseModernWindowStyle="True"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+        Background="{DynamicResource MaterialDesignPaper}"
+        TextElement.FontWeight="Medium"
+        TextElement.FontSize="14"
+        FontFamily="{materialDesign:MaterialDesignFont}"
+        Height="768"
+        Width="1280"
+        Loaded="Window_Loaded"
+        Title="Главное меню">
+
+    <Window.Resources>
+        <CollectionViewSource x:Key="servicesViewSource" />
+        <CollectionViewSource x:Key="jobsViewSource"
+                              Source="{Binding Jobs, Source={StaticResource servicesViewSource}}" />
+        <CollectionViewSource x:Key="categoriesViewSource"
+                              Source="{Binding Categories, Source={StaticResource jobsViewSource}}" />
+        <CollectionViewSource x:Key="themesViewSource"
+                              Source="{Binding Themes, Source={StaticResource categoriesViewSource}}" />
+        <CollectionViewSource x:Key="questionsViewSource"
+                              Source="{Binding Questions, Source={StaticResource themesViewSource}}" />
+        <CollectionViewSource x:Key="employeesViewSource"
+                              Source="{Binding Employees, Source={StaticResource jobsViewSource}}" />
+        <CollectionViewSource x:Key="testResultsViewSource"
+                              Source="{Binding TestResults, Source={StaticResource employeesViewSource}}" />
+        <local:CountConverter x:Key="countConverter" />
+
+    </Window.Resources>
+    <ui:SimpleStackPanel>
+
+        <TabControl>
+            <TabItem x:Name="questionsTab">
+                <TabItem.Header>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Margin="2">Вопросы</TextBlock>
+                    </StackPanel>
+                </TabItem.Header>
+                <TabItem.Content>
+                    <ui:SimpleStackPanel>
+                        <DockPanel FlowDirection="LeftToRight">
+                            <DataGrid x:Name="jobsDataGrid1"
+                                      AutoGenerateColumns="False"
+                                      Margin="16"
+                                      Width="250"
+                                      MinWidth="200"
+                                      Height="200"
+                                      DockPanel.Dock="Left"
+                                      BorderThickness="2,2,2,2"
+                                      BorderBrush="Gray"
+                                      EnableRowVirtualization="True"
+                                      ItemsSource="{Binding Source={StaticResource jobsViewSource}}"
+                                      RowDetailsVisibilityMode="VisibleWhenSelected"
+                                      InputScope="Xml"
+                                      ItemStringFormat=""
+                                      HorizontalContentAlignment="Left"
+                                      HorizontalAlignment="Left"
+                                      VerticalAlignment="Top"
+                                      VerticalContentAlignment="Top">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Binding="{Binding JobId}"
+                                                        Header="#"
+                                                        IsReadOnly="True" />
+                                    <DataGridTextColumn Binding="{Binding Title}"
+                                                        Header="Должность"
+                                                        Width="*" />
+                                </DataGrid.Columns>
+                            </DataGrid>
+
+                            <DataGrid x:Name="categoriesDataGrid"
+                                      AutoGenerateColumns="False"
+                                      Margin="16"
+                                      Height="200"
+                                      Width="300"
+                                      BorderThickness="2,2,2,2"
+                                      BorderBrush="Gray"
+                                      EnableRowVirtualization="True"
+                                      ItemsSource="{Binding Source={StaticResource categoriesViewSource}}"
+                                      RowDetailsVisibilityMode="VisibleWhenSelected"
+                                      HorizontalContentAlignment="Left"
+                                      HorizontalAlignment="Left"
+                                      VerticalAlignment="Top"
+                                      VerticalContentAlignment="Top">
+                                <DataGrid.Columns>
+
+                                    <DataGridTextColumn Binding="{Binding CategoryId}"
+                                                        Header="#"
+                                                        IsReadOnly="True" />
+                                    <DataGridTextColumn Binding="{Binding Title}"
+                                                        Header="Категория вопросов"
+                                                        Width="auto" />
+                                </DataGrid.Columns>
+                            </DataGrid>
+
+                            <DataGrid x:Name="themesDataGrid"
+                                      AutoGenerateColumns="False"
+                                      Margin="16"
+                                      VerticalAlignment="Top"
+                                      Height="200"
+                                      Width="620"
+                                      DockPanel.Dock="Right"
+                                      BorderThickness="2,2,2,2"
+                                      BorderBrush="Gray"
+                                      ItemsSource="{Binding Source={StaticResource themesViewSource}}"
+                                      RowDetailsVisibilityMode="VisibleWhenSelected"
+                                      HorizontalContentAlignment="Left"
+                                      HorizontalAlignment="Left"
+                                      VerticalContentAlignment="Top">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Binding="{Binding ThemeId}"
+                                                        Header="#"
+                                                        IsReadOnly="True" />
+                                    <DataGridTextColumn Binding="{Binding Title}"
+                                                        Header="Название теста"
+                                                        Width="300" />
+                                    <DataGridTextColumn Binding="{Binding TutorialPath}"
+                                                        IsReadOnly="True"
+                                                        Header="Путь к документу с обучением"
+                                                        Width="auto">
+                                    </DataGridTextColumn>
+                                </DataGrid.Columns>
+                                <DataGrid.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Header="Выбрать обучающий документ"
+                                                  Click="ButtonSetPathToTutorialClick" />
+                                        <MenuItem Header="Открыть документ"
+                                                  Click="ButtonOpenTutorialClick" />
+                                    </ContextMenu>
+                                </DataGrid.ContextMenu>
+                            </DataGrid>
+
+                        </DockPanel>
+
+                        <DockPanel Width="auto">
+                            <DataGrid x:Name="questionsDataGrid"
+                                      AutoGenerateColumns="False"
+                                      Margin="16"
+                                      Height="350"
+                                      Width="250"
+                                      BorderThickness="2,2,2,2"
+                                      DockPanel.Dock="Left"
+                                      BorderBrush="Gray"
+                                      EnableRowVirtualization="True"
+                                      ItemsSource="{Binding Source={StaticResource questionsViewSource}}"
+                                      RowDetailsVisibilityMode="VisibleWhenSelected"
+                                      HorizontalContentAlignment="Stretch"
+                                      HorizontalAlignment="Left"
+                                      MinWidth="300"
+                                      SelectionChanged="OnQuestionSelectionChanged"
+                                      VerticalAlignment="Top">
+                                <DataGrid.Columns>
+
+                                    <DataGridTextColumn Binding="{Binding QuestionId}"
+                                                        Header="#"
+                                                        IsReadOnly="True" />
+                                    <DataGridTextColumn Binding="{Binding Text}"
+                                                        Header="Вопрос"
+                                                        Width="*" />
+                                </DataGrid.Columns>
+                            </DataGrid>
+
+                            <ui:SimpleStackPanel x:Name="questionDetails"
+                                                 DockPanel.Dock="Right"
+                                                 Margin="16"
+                                                 MinWidth="880"
+                                                 Width="auto"
+                                                 HorizontalAlignment="Stretch">
+
+                                <DockPanel Width="auto"
+                                           HorizontalAlignment="Stretch">
+                                    <Label Content="#"
+                                           HorizontalContentAlignment="Stretch"
+                                           HorizontalAlignment="Stretch"
+                                           VerticalContentAlignment="Bottom"
+                                           VerticalAlignment="Bottom"
+                                           FontSize="16" />
+
+                                    <Label x:Name="questionIdTextBox"
+                                           Margin="0,0,16,0"
+                                           Content=""
+                                           HorizontalContentAlignment="Stretch"
+                                           HorizontalAlignment="Stretch"
+                                           VerticalContentAlignment="Bottom"
+                                           VerticalAlignment="Bottom"
+                                           FontSize="16" />
+                                    <TextBox x:Name="questionTextTextBox"
+                                             materialDesign:HintAssist.Hint="Вопрос"
+                                             materialDesign:HintAssist.IsFloating="True"
+                                             FontSize="16"
+                                             VerticalContentAlignment="Center"
+                                             VerticalAlignment="Center"
+                                             Width="870" />
+
+                                </DockPanel>
+                                <ui:SimpleStackPanel Orientation="Horizontal"
+                                                     VerticalAlignment="Center"
+                                                     Margin="0,0,0,16">
+                                    <TextBox x:Name="rigthAnswerTextBox"
+                                             materialDesign:HintAssist.Hint="Номер правильного ответа"
+                                             materialDesign:HintAssist.IsFloating="True"
+                                             FontSize="14"
+                                             VerticalContentAlignment="Center"
+                                             PreviewTextInput="OneDigitNumberValidationTextBox"></TextBox>
+                                    <TextBox  x:Name="costTextBox"
+                                              Margin="16,0,0,0"
+                                              materialDesign:HintAssist.Hint="Стоимость ответа"
+                                              materialDesign:HintAssist.IsFloating="True"
+                                              FontSize="14"
+                                              VerticalContentAlignment="Center"
+                                              PreviewTextInput="NumberValidationTextBox"></TextBox>
+                                    <ui:SimpleStackPanel Orientation="Horizontal"
+                                                         Margin="16,0,0,0"
+                                                         VerticalAlignment="Bottom">
+                                        <Label  Margin="8,000"
+                                                VerticalContentAlignment="Center">Задействовать изображения?</Label>
+                                        <CheckBox  x:Name="isWithImageCheckBox"
+                                                   Checked="SetImageAnswers"
+                                                   Unchecked="SetTextAnswers"></CheckBox>
+                                    </ui:SimpleStackPanel>
+                                </ui:SimpleStackPanel>
+
+
+
+                                <ui:SimpleStackPanel x:Name="textAnswers"
+                                                     HorizontalAlignment="Stretch">
+                                    <TextBox x:Name="answer1TextBox"
+                                             materialDesign:HintAssist.Hint="Ответ 1"
+                                             materialDesign:HintAssist.IsFloating="True"
+                                             Width="916"></TextBox>
+                                    <TextBox  x:Name="answer2TextBox"
+                                              materialDesign:HintAssist.Hint="Ответ 2"
+                                              Width="916"
+                                              materialDesign:HintAssist.IsFloating="True"></TextBox>
+                                    <TextBox  x:Name="answer3TextBox"
+                                              materialDesign:HintAssist.Hint="Ответ 3"
+                                              Width="916"
+                                              materialDesign:HintAssist.IsFloating="True"></TextBox>
+                                    <TextBox  x:Name="answer4TextBox"
+                                              materialDesign:HintAssist.Hint="Ответ 4"
+                                              Width="916"
+                                              materialDesign:HintAssist.IsFloating="True"></TextBox>
+                                    <TextBox  x:Name="answer5TextBox"
+                                              materialDesign:HintAssist.Hint="Ответ 5"
+                                              Width="916"
+                                              materialDesign:HintAssist.IsFloating="True"></TextBox>
+                                </ui:SimpleStackPanel>
+
+                                <WrapPanel x:Name="imageAnswers"
+                                           Width="880"
+                                           HorizontalAlignment="Left"
+                                           Visibility="Collapsed">
+
+                                    <Border BorderThickness="1"
+                                            BorderBrush="Gray"
+                                            Padding="4"
+                                            Margin="0,4,4,4"
+                                            CornerRadius="4">
+                                        <ui:SimpleStackPanel VerticalAlignment="Center"
+                                                             Margin="4">
+                                            <Image x:Name="image1"
+                                                   Width="150"
+                                                   Height="150"
+                                                   Source="/images/150_output-onlinepngtools.png"
+                                                   MouseDown="OnQuestionImageLoaded" />
+                                            <Label HorizontalContentAlignment="Center"
+                                                   VerticalContentAlignment="Bottom">Ответ 1</Label>
+                                        </ui:SimpleStackPanel>
+                                    </Border>
+
+                                    <Border BorderThickness="1"
+                                            BorderBrush="Gray"
+                                            Padding="4"
+                                            Margin="4"
+                                            CornerRadius="4">
+                                        <ui:SimpleStackPanel VerticalAlignment="Center"
+                                                             Margin="4">
+                                            <Image x:Name="image2"
+                                                   Width="150"
+                                                   Height="150"
+                                                   Source="/images/150_output-onlinepngtools.png"
+                                                   MouseDown="OnQuestionImageLoaded" />
+                                            <Label  VerticalContentAlignment="Center"
+                                                    HorizontalContentAlignment="Center">Ответ 2</Label>
+                                        </ui:SimpleStackPanel>
+                                    </Border>
+
+                                    <Border BorderThickness="1"
+                                            BorderBrush="Gray"
+                                            Padding="4"
+                                            Margin="4"
+                                            CornerRadius="4">
+                                        <ui:SimpleStackPanel VerticalAlignment="Center"
+                                                             Margin="4">
+                                            <Image x:Name="image3"
+                                                   Width="150"
+                                                   Height="150"
+                                                   Source="/images/150_output-onlinepngtools.png"
+                                                   MouseDown="OnQuestionImageLoaded" />
+                                            <Label  VerticalContentAlignment="Center"
+                                                    HorizontalContentAlignment="Center">Ответ 3</Label>
+                                        </ui:SimpleStackPanel>
+                                    </Border>
+
+                                    <Border BorderThickness="1"
+                                            BorderBrush="Gray"
+                                            Padding="4"
+                                            Margin="4"
+                                            CornerRadius="4">
+                                        <ui:SimpleStackPanel VerticalAlignment="Center"
+                                                             Margin="4">
+                                            <Image x:Name="image4"
+                                                   Width="150"
+                                                   Height="150"
+                                                   Source="/images/150_output-onlinepngtools.png"
+                                                   MouseDown="OnQuestionImageLoaded" />
+                                            <Label  VerticalContentAlignment="Center"
+                                                    HorizontalContentAlignment="Center">Ответ 4</Label>
+                                        </ui:SimpleStackPanel>
+                                    </Border>
+
+                                    <Border BorderThickness="1"
+                                            BorderBrush="Gray"
+                                            Padding="4"
+                                            Margin="4"
+                                            CornerRadius="4">
+                                        <ui:SimpleStackPanel VerticalAlignment="Center"
+                                                             Margin="4">
+                                            <Image x:Name="image5"
+                                                   Width="150"
+                                                   Height="150"
+                                                   Source="/images/150_output-onlinepngtools.png"
+                                                   MouseDown="OnQuestionImageLoaded" />
+                                            <Label  VerticalContentAlignment="Center"
+                                                    HorizontalContentAlignment="Center">Ответ 5</Label>
+                                        </ui:SimpleStackPanel>
+                                    </Border>
+                                </WrapPanel>
+                            </ui:SimpleStackPanel>
+                        </DockPanel>
+
+                        <Button Width="auto"
+                                Height="50"
+                                Content="Сохранить изменения"
+                                HorizontalAlignment="Right"
+                                FontSize="24"
+                                Margin="16"
+                                Click="ButtonSaveClick"
+                                HorizontalContentAlignment="Right"
+                                VerticalContentAlignment="Center"
+                                VerticalAlignment="Center" />
+                    </ui:SimpleStackPanel>
+                </TabItem.Content>
+            </TabItem>
+            <TabItem x:Name="employeesTab">
+                <TabItem.Header>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Margin="2">Сотрудники</TextBlock>
+                    </StackPanel>
+                </TabItem.Header>
+                <TabItem.Content>
+
+                    <ui:SimpleStackPanel Orientation="Vertical">
+                        <DockPanel FlowDirection="LeftToRight"
+                                   Height="614">
+                            <DataGrid x:Name="jobsDataGrid2"
+                                      AutoGenerateColumns="False"
+                                      Margin="16"
+                                      DockPanel.Dock="Left"
+                                      BorderThickness="2,2,1,2"
+                                      BorderBrush="Gray"
+                                      EnableRowVirtualization="True"
+                                      ItemsSource="{Binding Source={StaticResource jobsViewSource}}"
+                                      RowDetailsVisibilityMode="VisibleWhenSelected"
+                                      InputScope="Xml"
+                                      ItemStringFormat=""
+                                      HorizontalAlignment="Left"
+                                      VerticalContentAlignment="Stretch"
+                                      VerticalAlignment="Stretch">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Binding="{Binding JobId}"
+                                                        Header="#"
+                                                        IsReadOnly="True" />
+                                    <DataGridTextColumn Binding="{Binding Title}"
+                                                        Header="Должность"
+                                                        Width="150" />
+                                    <DataGridTextColumn Binding="{Binding Categories,Converter={StaticResource countConverter}}"
+                                                        Header="Кол-во тестов"
+                                                        Width="SizeToHeader"
+                                                        IsReadOnly="True" />
+                                </DataGrid.Columns>
+                            </DataGrid>
+
+                            <DataGrid x:Name="employeesDataGrid"
+                                      AutoGenerateColumns="False"
+                                      Margin="16"
+                                      AddingNewItem="OnEmployeeCreated"
+                                      BorderThickness="2,2,1,2"
+                                      BorderBrush="Gray"
+                                      EnableRowVirtualization="True"
+                                      ItemsSource="{Binding Source={StaticResource employeesViewSource}}"
+                                      RowDetailsVisibilityMode="VisibleWhenSelected"
+                                      InputScope="Xml"
+                                      ItemStringFormat=""
+                                      HorizontalAlignment="Left">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Binding="{Binding EmployeeId}"
+                                                        Header="#"
+                                                        IsReadOnly="True" />
+                                    <DataGridTextColumn Binding="{Binding Name}"
+                                                        Header="Имя сотрудника"
+                                                        Width="240" />
+                                    <DataGridTextColumn Binding="{Binding RegistrationDate, StringFormat=\{0:dd.MM.yyyy \}}"
+                                                        Header="Дата регистрации"
+                                                        IsReadOnly="True"
+                                                        Width="auto" />
+                                </DataGrid.Columns>
+
+                            </DataGrid>
+
+                            <DataGrid x:Name="testResultsDataGrid"
+                                      AutoGenerateColumns="False"
+                                      Margin="16"
+                                      DockPanel.Dock="Right"
+                                      BorderThickness="2,2,1,2"
+                                      BorderBrush="Gray"
+                                      EnableRowVirtualization="True"
+                                      ItemsSource="{Binding Source={StaticResource testResultsViewSource}}"
+                                      RowDetailsVisibilityMode="VisibleWhenSelected"
+                                      InputScope="Xml"
+                                      IsReadOnly="True"
+                                      ItemStringFormat=""
+                                      HorizontalAlignment="Left"
+                                      CanUserAddRows="False"
+                                      CanUserDeleteRows="False">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Binding="{Binding TestResultId}"
+                                                        Header="#"
+                                                        IsReadOnly="True" />
+                                    <DataGridTextColumn Binding="{Binding Theme.Title}"
+                                                        Header="Пройденный тест"
+                                                        Width="150" />
+                                    <DataGridCheckBoxColumn  Binding="{Binding TutorialWathed}"
+                                                             Header="Обучение"
+                                                             Width="auto" />
+                                    <DataGridTextColumn Binding="{Binding DatePass, StringFormat=\{0:dd.MM.yyyy \}}"
+                                                        Header="Дата"
+                                                        IsReadOnly="True"
+                                                        Width="auto" />
+                                    <DataGridTextColumn Binding="{Binding Result}"
+                                                        Header="Результат"
+                                                        IsReadOnly="True"
+                                                        Width="auto" />
+                                </DataGrid.Columns>
+
+                            </DataGrid>
+                        </DockPanel>
+                        <Button  DockPanel.Dock="Bottom"
+                                 Width="auto"
+                                 Height="50"
+                                 Content="Сохранить изменения"
+                                 HorizontalAlignment="Right"
+                                 FontSize="24"
+                                 Margin="16"
+                                 Click="ButtonSaveClick"
+                                 HorizontalContentAlignment="Right"
+                                 VerticalContentAlignment="Center"
+                                 VerticalAlignment="Center" />
+
+                    </ui:SimpleStackPanel>
+                </TabItem.Content>
+            </TabItem>
+
+            <TabItem x:Name="testingTab">
+                <TabItem.Header>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Margin="2">Тестирование</TextBlock>
+                    </StackPanel>
+                </TabItem.Header>
+                <TabItem.Content>
+
+                    <ui:SimpleStackPanel>
+                        <DockPanel FlowDirection="LeftToRight"
+                                   Height="616">
+
+                            <DataGrid x:Name="jobsDataGrid3"
+                                      AutoGenerateColumns="False"
+                                      Margin="16"
+                                      DockPanel.Dock="Left"
+                                      BorderThickness="2,2,1,2"
+                                      BorderBrush="Gray"
+                                      EnableRowVirtualization="True"
+                                      ItemsSource="{Binding Source={StaticResource jobsViewSource}}"
+                                      RowDetailsVisibilityMode="VisibleWhenSelected"
+                                      InputScope="Xml"
+                                      ItemStringFormat=""
+                                      HorizontalAlignment="Left"
+                                      VerticalContentAlignment="Stretch">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Binding="{Binding Title}"
+                                                        Header="Должность"
+                                                        Width="240"
+                                                        IsReadOnly="True" />
+                                </DataGrid.Columns>
+                            </DataGrid>
+
+
+                            <DataGrid x:Name="employeesDataGrid2"
+                                      AutoGenerateColumns="False"
+                                      Margin="16"
+                                      AddingNewItem="OnEmployeeCreated"
+                                      BorderThickness="2,2,1,2"
+                                      BorderBrush="Gray"
+                                      EnableRowVirtualization="True"
+                                      ItemsSource="{Binding Source={StaticResource employeesViewSource}}"
+                                      RowDetailsVisibilityMode="VisibleWhenSelected"
+                                      InputScope="Xml"
+                                      ItemStringFormat=""
+                                      HorizontalAlignment="Left">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Binding="{Binding EmployeeId}"
+                                                        IsReadOnly="True"
+                                                        Width="0" />
+                                    <DataGridTextColumn Binding="{Binding Name}"
+                                                        Header="Имя сотрудника"
+                                                        IsReadOnly="True"
+                                                        Width="250" />
+                                    <DataGridCheckBoxColumn x:Name="ChechedEmployees"
+                                                            Header="Включить?"
+                                                            Width="SizeToHeader"></DataGridCheckBoxColumn>
+                                </DataGrid.Columns>
+
+                            </DataGrid>
+
+
+                            <DataGrid x:Name="categoriesDataGrid2"
+                                      Margin="16"
+                                      BorderThickness="1,2,1,2"
+                                      AutoGenerateColumns="False"
+                                      BorderBrush="Gray"
+                                      EnableRowVirtualization="True"
+                                      ItemsSource="{Binding Source={StaticResource categoriesViewSource}}"
+                                      RowDetailsVisibilityMode="VisibleWhenSelected"
+                                      HorizontalAlignment="Left">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Binding="{Binding Title}"
+                                                        Header="Категория вопросов"
+                                                        Width="200"
+                                                        IsReadOnly="True" />
+                                </DataGrid.Columns>
+                            </DataGrid>
+
+                            <DataGrid x:Name="themesDataGrid2"
+                                      Margin="16"
+                                      BorderThickness="1,2,1,2"
+                                      AutoGenerateColumns="False"
+                                      BorderBrush="Gray"
+                                      EnableRowVirtualization="True"
+                                      ItemsSource="{Binding Source={StaticResource themesViewSource}}"
+                                      RowDetailsVisibilityMode="VisibleWhenSelected"
+                                      HorizontalAlignment="Left">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Binding="{Binding ThemeId}"
+                                                        IsReadOnly="True"
+                                                        Width="0" />
+                                    <DataGridTextColumn Binding="{Binding Title}"
+                                                        Header="Название теста"
+                                                        Width="200"
+                                                        IsReadOnly="True" />
+                                    <DataGridCheckBoxColumn x:Name="ChechedThemes"
+                                                            Header="Включить?"
+                                                            Width="SizeToHeader"></DataGridCheckBoxColumn>
+                                </DataGrid.Columns>
+                            </DataGrid>
+
+                        </DockPanel>
+
+
+
+                        <Button  DockPanel.Dock="Bottom"
+                                 Width="auto"
+                                 Height="50"
+                                 Content="Начать тестирование"
+                                 HorizontalAlignment="Right"
+                                 FontSize="24"
+                                 Margin="16"
+                                 Click="ButtonStartTestingClick"
+                                 HorizontalContentAlignment="Right"
+                                 VerticalContentAlignment="Center"
+                                 VerticalAlignment="Center" />
+
+                    </ui:SimpleStackPanel>
+
+
+                </TabItem.Content>
+
+            </TabItem>
+
+        </TabControl>
+    </ui:SimpleStackPanel>
+</Window>
