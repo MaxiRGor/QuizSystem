@@ -16,8 +16,10 @@
         FontFamily="{materialDesign:MaterialDesignFont}"
         Title="Панель администратора"
         Loaded="Window_Loaded"
-        Height="768"
-        Width="1280">
+        Height="1080"
+        Width="1920"
+        WindowState="Maximized"
+        WindowStyle="None">
 
     <Window.Resources>
         <CollectionViewSource x:Key="servicesViewSource" />
@@ -39,7 +41,7 @@
                   HorizontalAlignment="Center"
                   VerticalAlignment="Top"                 
                   VerticalContentAlignment="Top"
-                  Height="683"
+                  Height="1000"
                   CanUserDeleteRows="False">
             <DataGrid.Columns>
                 <DataGridTextColumn Binding="{Binding AirportServiceId}"
@@ -47,10 +49,13 @@
                                     IsReadOnly="True" />
                 <DataGridTextColumn Binding="{Binding Title}"
                                     Header="Служба"
-                                    Width="900" />
-                <DataGridTextColumn Binding="{Binding Password}"
-                                    Header="Пароль"
-                                    Width="300" />
+                                    Width="*" />
+                <DataGridTextColumn Binding="{Binding PasswordForTesting}"
+                                    Header="Пароль для тестирования"
+                                    Width="*" />
+                <DataGridTextColumn Binding="{Binding PasswordForRedacting}"
+                                    Header="Пароль для редактирования"
+                                    Width="*" />
             </DataGrid.Columns>
         </DataGrid>
     </Grid>

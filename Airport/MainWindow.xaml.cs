@@ -1,8 +1,10 @@
 ﻿
+using Airport.Model;
 using Castle.Core.Internal;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Win32;
 using ModernWpf.Controls;
+using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -36,7 +38,7 @@ namespace Airport
         private readonly AppContext _context = new AppContext();
 
         private CollectionViewSource servicesViewSource;
-      //  private ObservableCollection<Job> jobs;
+        private bool _reopenAuthWindow = true;
 
         public MainWindow(AirportService currentService)
         {
@@ -58,7 +60,6 @@ namespace Airport
             AirportService service = e.Item as AirportService;
             if (service != null)
             {
-                // Filter out products with price 25 or above
                 if (service.AirportServiceId == _currentService.AirportServiceId)
                 {
                     e.Accepted = true;
@@ -83,12 +84,17 @@ namespace Airport
 
         private void RefreshGrids()
         {
-            // this forces the grid to refresh to latest values
             jobsDataGrid1.Items.Refresh();
             jobsDataGrid2.Items.Refresh();
-            jobsDataGrid3.Items.Refresh();
             categoriesDataGrid.Items.Refresh();
-            themesDataGrid.Items.Refresh();
+            try
+            {
+                themesDataGrid.Items.Refresh();
+            }
+            catch
+            {
+
+            }
             questionsDataGrid.Items.Refresh();
             employeesDataGrid.Items.Refresh();
             testResultsDataGrid.Items.Refresh();
@@ -107,14 +113,21 @@ namespace Airport
                 _context.Questions.Find(questionId).Answer3 = answer3TextBox.Text;
                 _context.Questions.Find(questionId).Answer4 = answer4TextBox.Text;
                 _context.Questions.Find(questionId).Answer5 = answer5TextBox.Text;
-                _context.Questions.Find(questionId).IsWithImage = isWithImageCheckBox.IsChecked.Value;
-                if (isWithImageCheckBox.IsChecked.Value)
+                _context.Questions.Find(questionId).Answer6 = answer6TextBox.Text;
+                _context.Questions.Find(questionId).IsWithAnswerImage = isAnswersWithImageCheckBox.IsChecked.Value;
+                _context.Questions.Find(questionId).IsWithQuestionImage = isQuestionWithImageCheckBox.IsChecked.Value;
+                if (isAnswersWithImageCheckBox.IsChecked.Value)
                 {
                     _context.Questions.Find(questionId).Image1Path = image1.Source.ToString();
                     _context.Questions.Find(questionId).Image2Path = image2.Source.ToString();
                     _context.Questions.Find(questionId).Image3Path = image3.Source.ToString();
                     _context.Questions.Find(questionId).Image4Path = image4.Source.ToString();
                     _context.Questions.Find(questionId).Image5Path = image5.Source.ToString();
+                    _context.Questions.Find(questionId).Image6Path = image6.Source.ToString();
+                }
+                if (isQuestionWithImageCheckBox.IsChecked.Value)
+                {
+                    _context.Questions.Find(questionId).QuestionImagePath = questionImage.Source.ToString();
                 }
             }
             catch
@@ -129,9 +142,11 @@ namespace Airport
             // clean up database connections
             _context.Dispose();
             base.OnClosing(e);
-
-            AuthorizationWindow authorizationWindow = new AuthorizationWindow();
-            authorizationWindow.Show();
+            if (_reopenAuthWindow)
+            {
+                AuthorizationWindow authorizationWindow = new AuthorizationWindow();
+                authorizationWindow.Show();
+            }
         }
 
         private void OnQuestionImageLoaded(object sender, MouseButtonEventArgs e)
@@ -159,7 +174,7 @@ namespace Airport
         {
             try
             {
-                Theme currentTheme = GetTheme(sender);
+                Theme currentTheme = (Theme)GetSelectedObject(sender);
 
                 if (currentTheme.ThemeId == 0)
                 {
@@ -182,16 +197,17 @@ namespace Airport
             }
             catch
             {
-                MessageBox.Show("Сначала введите тему, к которой добавить обучение, и сохраните изменения");
+                message.Content = "Сначала введите тему, к которой добавить обучение,\n и сохраните изменения";
+                DialogHost.IsOpen = true;
             }
         }
 
-        private Theme GetTheme(object sender)
+        private object GetSelectedObject(object sender)
         {
             var menuItem = (MenuItem)sender;
             var contextMenu = (ContextMenu)menuItem.Parent;
             var item = (DataGrid)contextMenu.PlacementTarget;
-            return (Theme)item.SelectedCells[0].Item;
+            return item.SelectedCells[0].Item;
         }
 
         private string GetCopiedFileName(string newDir, string fileName)
@@ -205,8 +221,6 @@ namespace Airport
             }
             catch
             {
-                //todo remove
-                MessageBox.Show("Файл уже находится в директории");
             }
             return newPathToFile;
         }
@@ -229,7 +243,7 @@ namespace Airport
         {
             try
             {
-                Theme currentTheme = GetTheme(sender);
+                Theme currentTheme = (Theme)GetSelectedObject(sender);
                 new Process
                 {
                     StartInfo = new ProcessStartInfo(currentTheme.TutorialPath)
@@ -240,7 +254,8 @@ namespace Airport
             }
             catch
             {
-                MessageBox.Show("Нельзя открыть файл");
+                message.Content = "Нельзя открыть файл";
+                DialogHost.IsOpen = true;
             }
         }
 
@@ -257,6 +272,18 @@ namespace Airport
             imageAnswers.Visibility = Visibility.Visible;
         }
 
+
+        private void DisableQuestionImage(object sender, RoutedEventArgs e)
+        {
+            questionImagePanel.Visibility = Visibility.Collapsed;
+
+        }
+
+        private void EnableQuestionImage(object sender, RoutedEventArgs e)
+        {
+            questionImagePanel.Visibility = Visibility.Visible;
+        }
+
         private void NumberValidationTextBox(object sender, TextCompositionEventArgs e)
         {
             Regex regex = new Regex("[^0-9]+");
@@ -265,7 +292,7 @@ namespace Airport
 
         private void OneDigitNumberValidationTextBox(object sender, TextCompositionEventArgs e)
         {
-            Regex regex = new Regex("[^1-5]+");
+            Regex regex = new Regex("[^1-6]+");
             e.Handled = !(!regex.IsMatch(e.Text) && ((TextBox)sender).Text.Length < 1);
         }
 
@@ -285,19 +312,23 @@ namespace Airport
                 answer3TextBox.Text = question.Answer3;
                 answer4TextBox.Text = question.Answer4;
                 answer5TextBox.Text = question.Answer5;
-                isWithImageCheckBox.IsChecked = question.IsWithImage;
+                answer6TextBox.Text = question.Answer6;
+                isAnswersWithImageCheckBox.IsChecked = question.IsWithAnswerImage;
+                isQuestionWithImageCheckBox.IsChecked = question.IsWithQuestionImage;
 
                 SetImage(image1, question.Image1Path);
                 SetImage(image2, question.Image2Path);
                 SetImage(image3, question.Image3Path);
                 SetImage(image4, question.Image4Path);
                 SetImage(image5, question.Image5Path);
-
+                SetImage(image6, question.Image6Path);
+                SetImage(questionImage, question.QuestionImagePath);
 
             }
             catch
             {
                 questionDetails.Visibility = Visibility.Collapsed;
+                questionImagePanel.Visibility = Visibility.Collapsed;
             }
 
         }
@@ -318,7 +349,8 @@ namespace Airport
 
             catch
             {
-                MessageBox.Show("Путь к изображению некорректен: " + @imagePath);
+                message.Content = "Путь к изображению некорректен: " + @imagePath;
+                DialogHost.IsOpen = true;
             }
         }
 
@@ -327,75 +359,192 @@ namespace Airport
             e.NewItem = new Employee(DateTime.Now);
         }
 
+        public void ShowDeleteRowDialog(object sender, KeyEventArgs e)
+        {
+            DataGrid dg = sender as DataGrid;
+            if (dg != null)
+            {
+                if (e.Key == Key.Delete)
+                {
+                    var result = MessageBox.Show(
+                        "Вы хотите удалить данные. Это действие необратимо.\n\nПродолжить?",
+                        "Удаление",
+                        MessageBoxButton.YesNo,
+                        MessageBoxImage.Question,
+                        MessageBoxResult.No);
+                    e.Handled = (result == MessageBoxResult.No);
+                }
+            }
+        }
 
 
-        private void ButtonStartTestingClick(object sender, RoutedEventArgs e)
+        private void EmployeesSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            Employee employee = GetSelectedEmployee();
+            if (employee != null)
+            {
+                employeeNameLabel.Content = employee.Name;
+                if (employee.TestResults.Count == 0)
+                {
+                    testTitleLabel.Content = "Нет пройденных тестов";
+                    createExcelFileButton.IsEnabled = false;
+                }
+                else
+                {
+
+                    testTitleLabel.Content = "Количество пройденных тестов = " + employee.TestResults.Count;
+                    createExcelFileButton.IsEnabled = true;
+                }
+            }
+            else
+            {
+                employeeNameLabel.Content = "Сотрудник не выбран";
+                testTitleLabel.Content = "Нет пройденных тестов";
+                createExcelFileButton.IsEnabled = false;
+            }
+
+        }
+
+        private void ThemesSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            TestResult testResult = GetSelectedTestResult();
+            testTitleLabel.Content = testResult == null ? "Нет пройденных тестов" : "Количество пройденных тестов";
+        }
+
+        private Employee GetSelectedEmployee()
         {
             try
             {
-                List<Employee> employees = GetSelectedEmployeesList();
-                List<Theme> themes = GetSelectedThemesList();
-
-                if (employees.Count < 1 || themes.Count < 1)
-                {
-                    throw new ArgumentOutOfRangeException();
-                }
-
-                TestingWindow testingWindow = new TestingWindow(employees, themes)
-                {
-                    Owner = this
-                };
-                testingWindow.Show();
+                return (Employee)employeesDataGrid.SelectedCells[0].Item;
 
             }
             catch
             {
-                MessageBox.Show("Выберите сотрудников и тесты");
+                return null;
             }
         }
 
-        private List<Employee> GetSelectedEmployeesList()
+        private TestResult GetSelectedTestResult()
         {
-            var SelectedList = new List<Employee>();
-            for (int i = 0; i < employeesDataGrid2.Items.Count; i++)
+            try
             {
-                var item = employeesDataGrid2.Items[i];
-                var mycheckbox = employeesDataGrid2.Columns[2].GetCellContent(item) as CheckBox;
-                if ((bool)mycheckbox.IsChecked)
+                return (TestResult)testResultsDataGrid.SelectedCells[0].Item;
+
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        private void CreateExcelFileButtonClick(object sender, RoutedEventArgs e)
+        {
+            Employee employee = GetSelectedEmployee();
+
+            if (employee != null)
+            {
+
+                ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial;
+                using (var p = new ExcelPackage())
                 {
-                    var myTextBlock = employeesDataGrid2.Columns[0].GetCellContent(item) as TextBlock;
-                    int index = int.Parse(myTextBlock.Text.ToString());
-                    SelectedList.Add(_context.Employees.Find(index));
+                    List<ExcelModeTestResultOfDistinctEmployee> excelModeTestResults = new List<ExcelModeTestResultOfDistinctEmployee>();
+                    foreach(TestResult testResult in employee.TestResults)
+                    {
+                        excelModeTestResults.Add(new ExcelModeTestResultOfDistinctEmployee(testResult.Theme.Title, testResult.TutorialWathed, testResult.DatePass, testResult.Result, testResult.IsPassed));
+                    }
+                    var ws = p.Workbook.Worksheets.Add("Sheet1");
+
+                    ws.Cells["A1"].Value = employee.Name + ", " + employee.Job.Title;
+                    ws.Cells["A1"].Style.Font.Size = 24;
+                    ws.Cells["A1"].Style.Font.Bold = true;    
+
+                    ws.Cells["A2"].Value = "Название теста";
+                    ws.Cells["B2"].Value = "Отметка обучения";
+                    ws.Cells["C2"].Value = "Дата";
+                    ws.Cells["D2"].Value = "Результат";
+                    ws.Cells["E2"].Value = "Допуск";
+
+                    ws.Cells["A1:E1"].Merge = true;
+                    ws.Cells["A2:E2"].Style.Font.Bold = true;
+
+                    ws.Cells[3, 1].LoadFromCollection(excelModeTestResults);
+                    SaveAndStartExcelDocument(ws, p);
+
                 }
             }
-
-            return SelectedList;
         }
 
-        private List<Theme> GetSelectedThemesList()
+        private void SaveAndStartExcelDocument(ExcelWorksheet ws, ExcelPackage p)
         {
-            var SelectedList = new List<Theme>();
-            for (int i = 0; i < themesDataGrid2.Items.Count; i++)
+            ws.Cells.AutoFitColumns();
+
+            string directory = "excelData";
+            Directory.CreateDirectory(directory);
+            string fileName = System.IO.Path.GetFileName(DateTime.Now.Ticks + ".xlsx");
+            fileName = System.IO.Path.Combine(directory, fileName);
+            p.SaveAs(new FileInfo(fileName));
+
+            new Process
             {
-                var item = themesDataGrid2.Items[i];
-                var mycheckbox = themesDataGrid2.Columns[2].GetCellContent(item) as CheckBox;
-                if ((bool)mycheckbox.IsChecked)
+                StartInfo = new ProcessStartInfo(fileName)
                 {
-                    var myTextBlock = themesDataGrid2.Columns[0].GetCellContent(item) as TextBlock;
-                    int index = int.Parse(myTextBlock.Text.ToString());
-                    SelectedList.Add(_context.Themes.Find(index));
+                    UseShellExecute = true
                 }
-            }
-
-            return SelectedList;
+            }.Start();
         }
 
-        public void AddTestResultToEmployee(Employee employee, TestResult testResult)
+        private void OpenSelectTestWindowButtonClick(object sender, RoutedEventArgs e)
         {
-            _context.Employees.Find(employee.EmployeeId).TestResults.Add(testResult);
             _context.SaveChanges();
-            RefreshGrids();
+            TestSelectionWindow testSelectionWindow = new TestSelectionWindow(_currentService);
+            testSelectionWindow.Show();
+            _reopenAuthWindow = false;
+            Close();
         }
 
+        private void ShowTestResultsClick(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                Theme currentTheme = (Theme)GetSelectedObject(sender);
+                List<TestResult> testResults = _context.TestResults.Where(res => res.ThemeId == currentTheme.ThemeId).ToList();
+                List<ExcelModelTestResultsOfEmployeesList> excelModelTestResultsOfEmployeesLists = new List<ExcelModelTestResultsOfEmployeesList>();
+                foreach(TestResult testResult in testResults)
+                {
+                    excelModelTestResultsOfEmployeesLists.Add(new ExcelModelTestResultsOfEmployeesList(testResult.Employee.Name, testResult.TutorialWathed, testResult.DatePass, testResult.Result, testResult.IsPassed));
+                }
+                TestResultsWindow testResultsWindow = new TestResultsWindow(currentTheme.Category.Title + ", " + currentTheme.Title, excelModelTestResultsOfEmployeesLists);
+                testResultsWindow.Owner = this;
+                testResultsWindow.Show();
+
+            }
+            catch
+            {
+
+            }
+
+        }
+
+        private void ShowFinalTestResultsClick(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                Job currentJob = (Job)GetSelectedObject(sender);
+                List<FinalTestResult> testResults = _context.FinalTestResults.Where(res => res.Employee.Job == currentJob).ToList();
+                List<ExcelModelTestResultsOfEmployeesList> excelModelTestResultsOfEmployeesLists = new List<ExcelModelTestResultsOfEmployeesList>();
+                foreach (FinalTestResult testResult in testResults)
+                {
+                    excelModelTestResultsOfEmployeesLists.Add(new ExcelModelTestResultsOfEmployeesList(testResult.Employee.Name, false, testResult.DatePass, testResult.Result, testResult.IsPassed));
+                }
+                TestResultsWindow testResultsWindow = new TestResultsWindow(currentJob.Title + ", " + "Итоговый тест", excelModelTestResultsOfEmployeesLists);
+                testResultsWindow.Owner = this;
+                testResultsWindow.Show();
+
+            }
+            catch
+            {
+
+            }
+        }
     }
 }

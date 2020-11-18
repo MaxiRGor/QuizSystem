@@ -11,25 +11,62 @@
         Background="{DynamicResource MaterialDesignPaper}"
         TextElement.FontWeight="Medium"
         TextElement.FontSize="14"
-        Height="768"
-        Width="1280"
+        Height="1080"
+        Width="1920"
+        WindowState="Maximized"
+        WindowStyle="None"
         FontFamily="{materialDesign:MaterialDesignFont}"
         Title="Тест">
 
-    <ui:SimpleStackPanel x:Name="questionDetails"
-                         Height="752"
-                         Width="1280"
+    <materialDesign:DialogHost x:Name="DialogHost">
+        <materialDesign:DialogHost.DialogContent>
+            <ui:SimpleStackPanel>
+                <Label x:Name="message"
+                       FontSize="16"
+                       Margin="8"></Label>
+                <Button Style="{StaticResource MaterialDesignFlatButton}"
+                        IsCancel="True"
+                        Margin="4"
+                        Content="Ок"
+                        Click="CloseButtonClick"
+                        HorizontalAlignment="Center">
+                </Button>
+            </ui:SimpleStackPanel>
+
+        </materialDesign:DialogHost.DialogContent>
+        
+        <ui:SimpleStackPanel x:Name="questionDetails"
+                         Height="1000"
+                         Width="1400"
                          DockPanel.Dock="Right">
 
-        <ProgressBar x:Name="progressBar"
-                     Background="#FFF0EFF1"
-                     Height="8"
-                     BorderThickness="0,0,0,0"></ProgressBar>
+        <DockPanel >
+            <TextBlock x:Name="title"
+                       HorizontalAlignment="Center"
+                       FontSize="24"
+                       Text="Тема"
+                       VerticalAlignment="Center"
+                       Margin="0,0,16,0" />
+            <Grid>
+                <ProgressBar x:Name="progressBar"
+                             Background="#FFF0EFF1"
+                             BorderThickness="0,0,0,0"
+                             HorizontalContentAlignment="Stretch"
+                             HorizontalAlignment="Stretch"
+                             Height="30"></ProgressBar>
+                <TextBlock x:Name="progressBarPercentage"
+                           HorizontalAlignment="Center"
+                           FontSize="24"
+                           Text="0 / 10"
+                           VerticalAlignment="Center" />
+            </Grid>
+        </DockPanel>
+
         <TextBox x:Name="questionTextTextBox"
                  TextWrapping="WrapWithOverflow"
                  AcceptsReturn="True"
                  FontSize="24"
-                 Height="150"
+                 Height="200"
                  IsReadOnly="True"
                  Margin="16"
                  materialDesign:HintAssist.Hint="Вопрос"
@@ -38,154 +75,208 @@
                  VerticalAlignment="Center">
         </TextBox>
 
-        <ui:SimpleStackPanel x:Name="textAnswers"
-                             HorizontalAlignment="Stretch"
-                             Visibility="Visible"
-                             Height="420" Margin="16">
 
-            <TextBox x:Name="answer1TextBox"
-                     IsReadOnly="True"
-                     TextWrapping="WrapWithOverflow"
-                     FontSize="20"
-                     materialDesign:HintAssist.Hint="Ответ 1"
-                     PreviewMouseDown="OnTextBoxTapped"
-                     Tag="1"
-                     materialDesign:HintAssist.IsFloating="True"></TextBox>
-            <TextBox  x:Name="answer2TextBox"
-                      IsReadOnly="True"
-                      TextWrapping="WrapWithOverflow"
-                      FontSize="20"
-                      PreviewMouseDown="OnTextBoxTapped"
-                      Tag="2"
-                      materialDesign:HintAssist.Hint="Ответ 2"
-                      materialDesign:HintAssist.IsFloating="True"></TextBox>
-            <TextBox  x:Name="answer3TextBox"
-                      IsReadOnly="True"
-                      TextWrapping="WrapWithOverflow"
-                      FontSize="20"
-                      PreviewMouseDown="OnTextBoxTapped"
-                      Tag="3"
-                      materialDesign:HintAssist.Hint="Ответ 3"
-                      materialDesign:HintAssist.IsFloating="True"></TextBox>
-            <TextBox  x:Name="answer4TextBox"
-                      IsReadOnly="True"
-                      TextWrapping="WrapWithOverflow"
-                      FontSize="20"
-                      PreviewMouseDown="OnTextBoxTapped"
-                      Tag="4"
-                      materialDesign:HintAssist.Hint="Ответ 4"
-                      materialDesign:HintAssist.IsFloating="True"></TextBox>
-            <TextBox  x:Name="answer5TextBox"
-                      IsReadOnly="True"
-                      TextWrapping="WrapWithOverflow"
-                      FontSize="20"
-                      PreviewMouseDown="OnTextBoxTapped"
-                      Tag="5"
-                      materialDesign:HintAssist.Hint="Ответ 5"
-                      materialDesign:HintAssist.IsFloating="True"></TextBox>
+        <ui:SimpleStackPanel Orientation="Horizontal">
+            <Border BorderThickness="2"
+                    x:Name="questionImagePanel"
+                    Visibility="Collapsed"
+                    BorderBrush="Gray"
+                    Padding="4"
+                    Margin="16"
+                    CornerRadius="4"
+                    VerticalAlignment="Center"
+                    HorizontalAlignment="Center">
+                <ui:SimpleStackPanel VerticalAlignment="Center"
+                                     Margin="4">
+                    <Image x:Name="questionImage"
+                           Width="400"
+                           Height="400"
+                           Source="/images/150_output-onlinepngtools.png" />
+                    <Label  VerticalContentAlignment="Center"
+                            FontSize="20"
+                            HorizontalContentAlignment="Center">Изображение вопроса</Label>
+                </ui:SimpleStackPanel>
+            </Border>
+
+            <ui:SimpleStackPanel x:Name="textAnswers"
+                                 Visibility="Visible"
+                                 Height="550"
+                                 Width="800"
+                                 Margin="16,16,16,16">
+
+                <TextBox x:Name="answer1TextBox"
+                         IsReadOnly="True"
+                         TextWrapping="WrapWithOverflow"
+                         FontSize="20"
+                         materialDesign:HintAssist.Hint="Ответ 1"
+                         PreviewMouseDown="OnTextBoxTapped"
+                         Tag="1"
+                         materialDesign:HintAssist.IsFloating="True"></TextBox>
+                <TextBox  x:Name="answer2TextBox"
+                          IsReadOnly="True"
+                          TextWrapping="WrapWithOverflow"
+                          FontSize="20"
+                          PreviewMouseDown="OnTextBoxTapped"
+                          Tag="2"
+                          materialDesign:HintAssist.Hint="Ответ 2"
+                          materialDesign:HintAssist.IsFloating="True"></TextBox>
+                <TextBox  x:Name="answer3TextBox"
+                          IsReadOnly="True"
+                          TextWrapping="WrapWithOverflow"
+                          FontSize="20"
+                          PreviewMouseDown="OnTextBoxTapped"
+                          Tag="3"
+                          materialDesign:HintAssist.Hint="Ответ 3"
+                          materialDesign:HintAssist.IsFloating="True"></TextBox>
+                <TextBox  x:Name="answer4TextBox"
+                          IsReadOnly="True"
+                          TextWrapping="WrapWithOverflow"
+                          FontSize="20"
+                          PreviewMouseDown="OnTextBoxTapped"
+                          Tag="4"
+                          materialDesign:HintAssist.Hint="Ответ 4"
+                          materialDesign:HintAssist.IsFloating="True"></TextBox>
+                <TextBox  x:Name="answer5TextBox"
+                          IsReadOnly="True"
+                          TextWrapping="WrapWithOverflow"
+                          FontSize="20"
+                          PreviewMouseDown="OnTextBoxTapped"
+                          Tag="5"
+                          materialDesign:HintAssist.Hint="Ответ 5"
+                          materialDesign:HintAssist.IsFloating="True"></TextBox>
+                <TextBox  x:Name="answer6TextBox"
+                          IsReadOnly="True"
+                          TextWrapping="WrapWithOverflow"
+                          FontSize="20"
+                          PreviewMouseDown="OnTextBoxTapped"
+                          Tag="6"
+                          materialDesign:HintAssist.Hint="Ответ 6"
+                          materialDesign:HintAssist.IsFloating="True"></TextBox>
+            </ui:SimpleStackPanel>
+
+            <WrapPanel x:Name="imageAnswers"
+                       Height="550"
+                       Width="800"
+                       Margin="16"
+                       HorizontalAlignment="Center"
+                       Visibility="Collapsed">
+
+                <Border BorderThickness="1"
+                        BorderBrush="Gray"
+                        Padding="4"
+                        Margin="0,4,4,4"
+                        CornerRadius="4">
+                    <ui:SimpleStackPanel VerticalAlignment="Center"
+                                         Margin="4">
+                        <Image x:Name="image1"
+                               Width="220"
+                               Height="220"
+                               Source="/images/150_output-onlinepngtools.png"
+                               MouseDown="OnQuestionImageTapped"
+                               Tag="1" />
+                        <Label FontSize="20"
+                               HorizontalContentAlignment="Center"
+                               VerticalContentAlignment="Bottom">Ответ 1</Label>
+                    </ui:SimpleStackPanel>
+                </Border>
+
+                <Border BorderThickness="1"
+                        BorderBrush="Gray"
+                        Padding="4"
+                        Margin="4"
+                        CornerRadius="4">
+                    <ui:SimpleStackPanel VerticalAlignment="Center"
+                                         Margin="4">
+                        <Image x:Name="image2"
+                               Width="220"
+                               Height="220"
+                               Source="/images/150_output-onlinepngtools.png"
+                               MouseDown="OnQuestionImageTapped"
+                               Tag="2" />
+                        <Label FontSize="20"
+                               VerticalContentAlignment="Center"
+                               HorizontalContentAlignment="Center">Ответ 2</Label>
+                    </ui:SimpleStackPanel>
+                </Border>
+
+                <Border BorderThickness="1"
+                        BorderBrush="Gray"
+                        Padding="4"
+                        Margin="4"
+                        CornerRadius="4">
+                    <ui:SimpleStackPanel VerticalAlignment="Center"
+                                         Margin="4">
+                        <Image x:Name="image3"
+                               Width="220"
+                               Height="220"
+                               Source="/images/150_output-onlinepngtools.png"
+                               MouseDown="OnQuestionImageTapped"
+                               Tag="3" />
+                        <Label FontSize="20"
+                               VerticalContentAlignment="Center"
+                               HorizontalContentAlignment="Center">Ответ 3</Label>
+                    </ui:SimpleStackPanel>
+                </Border>
+
+                <Border BorderThickness="1"
+                        BorderBrush="Gray"
+                        Padding="4"
+                        Margin="4"
+                        CornerRadius="4">
+                    <ui:SimpleStackPanel VerticalAlignment="Center"
+                                         Margin="4">
+                        <Image x:Name="image4"
+                               Width="220"
+                               Height="220"
+                               Source="/images/150_output-onlinepngtools.png"
+                               MouseDown="OnQuestionImageTapped"
+                               Tag="4" />
+                        <Label  FontSize="20"
+                                VerticalContentAlignment="Center"
+                                HorizontalContentAlignment="Center">Ответ 4</Label>
+                    </ui:SimpleStackPanel>
+                </Border>
+
+                <Border BorderThickness="1"
+                        BorderBrush="Gray"
+                        Padding="4"
+                        Margin="4"
+                        CornerRadius="4">
+                    <ui:SimpleStackPanel VerticalAlignment="Center"
+                                         Margin="4">
+                        <Image x:Name="image5"
+                               Width="220"
+                               Height="220"
+                               Source="/images/150_output-onlinepngtools.png"
+                               MouseDown="OnQuestionImageTapped"
+                               Tag="5" />
+                        <Label FontSize="20"
+                               VerticalContentAlignment="Center"
+                               HorizontalContentAlignment="Center">Ответ 5</Label>
+                    </ui:SimpleStackPanel>
+                </Border>
+                <Border BorderThickness="1"
+                        BorderBrush="Gray"
+                        x:Name="image6Panel"
+                        Padding="4"
+                        Margin="4"
+                        CornerRadius="4">
+                    <ui:SimpleStackPanel VerticalAlignment="Center"
+                                         Margin="4">
+                        <Image x:Name="image6"
+                               Width="220"
+                               Height="220"
+                               Source="/images/150_output-onlinepngtools.png"
+                               MouseDown="OnQuestionImageTapped"
+                               Tag="6" />
+                        <Label FontSize="20"
+                               VerticalContentAlignment="Center"
+                               HorizontalContentAlignment="Center">Ответ 6</Label>
+                    </ui:SimpleStackPanel>
+                </Border>
+            </WrapPanel>
         </ui:SimpleStackPanel>
 
-        <WrapPanel x:Name="imageAnswers"
-                   Height="420"
-                   Margin="16"
-                   HorizontalAlignment="Left"
-                   Visibility="Collapsed">
-
-            <Border BorderThickness="1"
-                    BorderBrush="Gray"
-                    Padding="4"
-                    Margin="0,4,4,4"
-                    CornerRadius="4">
-                <ui:SimpleStackPanel VerticalAlignment="Center"
-                                     Margin="4">
-                    <Image x:Name="image1"
-                           Width="220"
-                           Height="220"
-                           Source="/images/150_output-onlinepngtools.png"
-                           MouseDown="OnQuestionImageTapped"
-                           Tag="1" />
-                    <Label FontSize="20"
-                           HorizontalContentAlignment="Center"
-                           VerticalContentAlignment="Bottom">Ответ 1</Label>
-                </ui:SimpleStackPanel>
-            </Border>
-
-            <Border BorderThickness="1"
-                    BorderBrush="Gray"
-                    Padding="4"
-                    Margin="4"
-                    CornerRadius="4">
-                <ui:SimpleStackPanel VerticalAlignment="Center"
-                                     Margin="4">
-                    <Image x:Name="image2"
-                           Width="220"
-                           Height="220"
-                           Source="/images/150_output-onlinepngtools.png"
-                           MouseDown="OnQuestionImageTapped"
-                           Tag="2" />
-                    <Label FontSize="20"
-                           VerticalContentAlignment="Center"
-                           HorizontalContentAlignment="Center">Ответ 2</Label>
-                </ui:SimpleStackPanel>
-            </Border>
-
-            <Border BorderThickness="1"
-                    BorderBrush="Gray"
-                    Padding="4"
-                    Margin="4"
-                    CornerRadius="4">
-                <ui:SimpleStackPanel VerticalAlignment="Center"
-                                     Margin="4">
-                    <Image x:Name="image3"
-                           Width="220"
-                           Height="220"
-                           Source="/images/150_output-onlinepngtools.png"
-                           MouseDown="OnQuestionImageTapped"
-                           Tag="3" />
-                    <Label FontSize="20"
-                           VerticalContentAlignment="Center"
-                           HorizontalContentAlignment="Center">Ответ 3</Label>
-                </ui:SimpleStackPanel>
-            </Border>
-
-            <Border BorderThickness="1"
-                    BorderBrush="Gray"
-                    Padding="4"
-                    Margin="4"
-                    CornerRadius="4">
-                <ui:SimpleStackPanel VerticalAlignment="Center"
-                                     Margin="4">
-                    <Image x:Name="image4"
-                           Width="220"
-                           Height="220"
-                           Source="/images/150_output-onlinepngtools.png"
-                           MouseDown="OnQuestionImageTapped"
-                           Tag="4" />
-                    <Label  FontSize="20"
-                            VerticalContentAlignment="Center"
-                            HorizontalContentAlignment="Center">Ответ 4</Label>
-                </ui:SimpleStackPanel>
-            </Border>
-
-            <Border BorderThickness="1"
-                    BorderBrush="Gray"
-                    Padding="4"
-                    Margin="4"
-                    CornerRadius="4">
-                <ui:SimpleStackPanel VerticalAlignment="Center"
-                                     Margin="4">
-                    <Image x:Name="image5"
-                           Width="220"
-                           Height="220"
-                           Source="/images/150_output-onlinepngtools.png"
-                           MouseDown="OnQuestionImageTapped"
-                           Tag="5" />
-                    <Label FontSize="20"
-                           VerticalContentAlignment="Center"
-                           HorizontalContentAlignment="Center">Ответ 5</Label>
-                </ui:SimpleStackPanel>
-            </Border>
-        </WrapPanel>
 
         <ui:SimpleStackPanel Orientation="Horizontal"
                              VerticalAlignment="Center"
@@ -195,7 +286,7 @@
             <TextBox x:Name="answerTextBox"
                      materialDesign:HintAssist.Hint="Номер ответа"
                      materialDesign:HintAssist.IsFloating="True"
-                     FontSize="24"
+                     FontSize="30"
                      VerticalContentAlignment="Center"
                      PreviewTextInput="OneDigitNumberValidationTextBox"
                      HorizontalContentAlignment="Left"
@@ -214,4 +305,6 @@
         </ui:SimpleStackPanel>
 
     </ui:SimpleStackPanel>
+
+    </materialDesign:DialogHost>
 </Window>

@@ -1,4 +1,6 @@
 ﻿
+
+using MaterialDesignThemes.Wpf;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -53,13 +55,12 @@ namespace Airport
             base.OnClosing(e);
         }
 
-        private void OnAuthorizeButtonClick(object sender, RoutedEventArgs e)
+        private void OnEnterEditModButtonClick(object sender, RoutedEventArgs e)
         {
             if (serviceComboBox.SelectedItem != null)
             {
-
                 AirportService currentService = _context.AirportServices.Local.Single(s => s.AirportServiceId == int.Parse(serviceComboBox.SelectedValue.ToString()));
-                if (currentService.Password == passwordTextTextBox.Text)
+                if (currentService.PasswordForRedacting == passwordTextTextBox.Text)
                 {
                     if (currentService.AirportServiceId == 1)
                     {
@@ -76,7 +77,37 @@ namespace Airport
                 }
                 else
                 {
-                    MessageBox.Show("Неверный пароль");
+                    message.Content = "Неверный пароль для режима редактирования";
+                    DialogHost.IsOpen = true;
+                }
+
+            }
+        }
+
+        private void OnEnterTestModButtonClick(object sender, RoutedEventArgs e)
+        {
+            if (serviceComboBox.SelectedItem != null)
+            {
+                AirportService currentService = _context.AirportServices.Local.Single(s => s.AirportServiceId == int.Parse(serviceComboBox.SelectedValue.ToString()));
+                if (currentService.PasswordForTesting == passwordTextTextBox.Text)
+                {
+                    if (currentService.AirportServiceId == 1)
+                    {
+                        AdminWindow adminWindow = new AdminWindow();
+                        adminWindow.Show();
+                    }
+                    else
+                    {
+                        TestSelectionWindow testSelectionWindow = new TestSelectionWindow(currentService);
+                        testSelectionWindow.Show();
+                    }
+
+                    Close();
+                }
+                else
+                {
+                    message.Content = "Неверный пароль для режима тестирования";
+                    DialogHost.IsOpen = true;
                 }
 
             }

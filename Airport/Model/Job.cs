@@ -6,6 +6,11 @@ namespace Airport
 {
     public class Job
     {
+        public Job()
+        {
+            ResultInFinalTestToPass = 75;
+        }
+
         public int JobId { get; set; }
         public string Title { get; set; }
 
@@ -16,5 +21,8 @@ namespace Airport
         public virtual ICollection<Category> Categories { get; private set; } = new ObservableCollection<Category>();
 
         public virtual ICollection<Employee> Employees { get; private set; } = new ObservableCollection<Employee>();
+
+        public int ResultInFinalTestToPass { get; set; }
+
     }
 }

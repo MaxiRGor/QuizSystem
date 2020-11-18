@@ -23,5 +23,7 @@ namespace Airport
         public DateTime RegistrationDate { get; set; }
 
         public virtual ICollection<TestResult> TestResults { get; private set; } = new ObservableCollection<TestResult>();
+
+        public virtual ICollection<FinalTestResult> FinalTestResults { get; private set; } = new ObservableCollection<FinalTestResult>();
     }
 }

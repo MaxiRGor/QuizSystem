@@ -1,4 +1,5 @@
-﻿using Castle.Core.Internal;
+﻿using Airport.Model;
+using Castle.Core.Internal;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -23,34 +24,25 @@ namespace Airport
         private Employee _employee;
         private Theme _theme;
         private List<Question> _questions;
-        private bool _tutorialWathed;
         private int _right_answers;
         private int _points;
+        private List<UserAnswer> _userAnswers;
 
-        public DistinctTestWindow()
-        {
-            InitializeComponent();
-        }
 
-        public DistinctTestWindow(Employee employee, Theme theme, List<Question> questions, bool tutorialWathed)
+        public DistinctTestWindow(Employee employee, Theme theme, List<Question> questions)
         {
             InitializeComponent();
             _questionIndex = 0;
             _employee = employee;
             _questions = questions;
             _theme = theme;
-            _tutorialWathed = tutorialWathed;
             _right_answers = 0;
             _points = 0;
+            _userAnswers = new List<UserAnswer>();
 
-            if (_questions.Count == 0)
-            {
-                MessageBox.Show("Количество вопросов в данном тесте равно нулю!");
-            }
-            else
-            {
-                SetView();
-            }
+            title.Text = _theme != null ? _theme.Title : "Итоговый тест";
+
+            SetView();
         }
 
         private void SetView()
@@ -58,7 +50,7 @@ namespace Airport
             SetProgress();
             Question current_question = _questions[_questionIndex];
             questionTextTextBox.Text = current_question.Text;
-            if (current_question.IsWithImage)
+            if (current_question.IsWithAnswerImage)
             {
                 imageAnswers.Visibility = Visibility.Visible;
                 textAnswers.Visibility = Visibility.Collapsed;
@@ -67,6 +59,16 @@ namespace Airport
                 SetImage(image3, current_question.Image3Path);
                 SetImage(image4, current_question.Image4Path);
                 SetImage(image5, current_question.Image5Path);
+                if (current_question.Image6Path.Length != 0)
+                {
+                    image6Panel.Visibility = Visibility.Visible;
+                    SetImage(image6, current_question.Image6Path);
+                }
+                else
+                {
+                    image6Panel.Visibility = Visibility.Collapsed;
+                }
+
             }
             else
             {
@@ -77,7 +79,28 @@ namespace Airport
                 answer3TextBox.Text = current_question.Answer3;
                 answer4TextBox.Text = current_question.Answer4;
                 answer5TextBox.Text = current_question.Answer5;
+                if (current_question.Answer6 != null && current_question.Answer6.Length != 0)
+                {
+                    answer6TextBox.Visibility = Visibility.Visible;
+                    answer6TextBox.Text = current_question.Answer6;
+                }
+                else
+                {
+                    answer6TextBox.Visibility = Visibility.Collapsed;
+                }
             }
+
+            if (current_question.IsWithQuestionImage)
+            {
+                questionImagePanel.Visibility = Visibility.Visible;
+                SetImage(questionImage, current_question.QuestionImagePath);
+            }
+            else
+            {
+                questionImagePanel.Visibility = Visibility.Collapsed;
+            }
+
+            answerTextBox.Text = "";
         }
 
 
@@ -89,25 +112,47 @@ namespace Airport
                 max_points += q.Cost;
             }
 
-            int result = max_points==0?(_right_answers*100/_questions.Count):(_points * 100 / max_points) ;
+            int result = max_points == 0 ? (_right_answers * 100 / _questions.Count) : (_points * 100 / max_points);
 
-            MessageBox.Show("Вы, " + _employee.Name + ",\n" +
-                "прошли тест " + _theme.Title + "\n" +
-                "в категории " + _theme.Category.Title + "\n" +
-                "с результатом " + result + " из 100.\n" +
-                "Правильных ответов " + _right_answers + " из " + _questions.Count + ".");
+            if (_theme != null)
+            {
+                string verdict = (result >= _theme.ResultToPass) ? "" : "НЕ ";
 
-            TestResult testResult = new TestResult(_employee.EmployeeId, _employee, _theme.ThemeId, _theme, result, DateTime.Now, _tutorialWathed);
+                message.Content = "Вы, " + _employee.Name + ",\n" +
+                       verdict +
+                        "прошли тест " + _theme.Title + "\n" +
+                        "в категории " + _theme.Category.Title + "\n" +
+                        "с результатом " + result + " из 100.\n" +
+                        "Правильных ответов " + _right_answers + " из " + _questions.Count + ".";
+                DialogHost.IsOpen = true;
 
-            ((MainWindow)((TestingWindow)Owner).Owner).AddTestResultToEmployee(_employee, testResult);
+                TestResult testResult = new TestResult(_employee.EmployeeId, _employee, _theme.ThemeId, _theme, result, DateTime.Now, result >= _theme.ResultToPass);
+                ((TestSelectionWindow)Owner).AddTestResultToEmployee(_employee, testResult, _userAnswers);
+            }
+            else
+            {
+                string verdict = (result >= _employee.Job.ResultInFinalTestToPass) ? "" : "НЕ ";
 
-            this.Close();
+                message.Content = "Вы, " + _employee.Name + ",\n" +
+                     verdict +
+                    "прошли ИТОГОВЫЙ тест " + "\n" +
+                    "с результатом " + result + " из 100.\n" +
+                    "Правильных ответов " + _right_answers + " из " + _questions.Count + ".";
+                DialogHost.IsOpen = true;
+
+                FinalTestResult finalTestResult = new FinalTestResult(_employee.EmployeeId, _employee, result, DateTime.Now, result >= _employee.Job.ResultInFinalTestToPass);
+                ((TestSelectionWindow)Owner).AddFinalTestResultToEmployee(_employee, finalTestResult);
+            }
+
+
+            //this.Close();
 
         }
 
         private void SetProgress()
         {
-            progressBar.Value = (_questionIndex * 100 / _questions.Count) ;
+            progressBar.Value = (_questionIndex * 100 / _questions.Count);
+            progressBarPercentage.Text = _questionIndex.ToString() + " / " + _questions.Count.ToString();
         }
 
         private void SetImage(Image image, string imagePath)
@@ -126,13 +171,12 @@ namespace Airport
 
             catch
             {
-                MessageBox.Show("Путь к изображению некорректен: " + @imagePath);
             }
         }
 
         private void OneDigitNumberValidationTextBox(object sender, TextCompositionEventArgs e)
         {
-            Regex regex = new Regex("[^1-5]+");
+            Regex regex = new Regex("[^1-6]+");
             e.Handled = !(!regex.IsMatch(e.Text) && ((TextBox)sender).Text.Length < 1);
         }
 
@@ -153,6 +197,9 @@ namespace Airport
                     _points += current_question.Cost;
                     _right_answers++;
                 }
+
+                _userAnswers.Add(new UserAnswer("#" + current_question.QuestionId + ". " + current_question.Text, userAnswer, current_question.RightAnswer));
+
             }
             if (_questionIndex + 1 < _questions.Count)
             {
@@ -169,6 +216,11 @@ namespace Airport
         {
             TextBox image = (TextBox)e.Source;
             answerTextBox.Text = int.Parse(image.Tag.ToString()).ToString();
+        }
+
+        private void CloseButtonClick(object sender, RoutedEventArgs e)
+        {
+            this.Close();
         }
     }
 }

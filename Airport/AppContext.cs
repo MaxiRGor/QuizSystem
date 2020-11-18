@@ -15,6 +15,10 @@ namespace Airport
 
         public DbSet<Employee> Employees { get; set; }
 
+        public DbSet<TestResult> TestResults { get; set; }
+
+        public DbSet<FinalTestResult> FinalTestResults { get; set; }
+
         protected override void OnConfiguring(
             DbContextOptionsBuilder optionsBuilder)
         {

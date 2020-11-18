@@ -19,25 +19,43 @@
         Loaded="Window_Loaded"
         Title="Авторизация">
 
-    <DockPanel 
-               HorizontalAlignment="Center"
-               Height="260">
-        <ui:SimpleStackPanel VerticalAlignment="Center"
-                             Width="368">
-            <ComboBox x:Name="serviceComboBox"                      
-                      Margin="16"
-                      materialDesign:HintAssist.Hint="Служба"
-                      materialDesign:HintAssist.IsFloating="True"
-                      FontSize="16" />
-            <TextBox x:Name="passwordTextTextBox"
-                     Margin="16"
-                     materialDesign:HintAssist.Hint="Пароль"
-                     materialDesign:HintAssist.IsFloating="True"
-                     FontSize="16" />
-            <Button Content="Войти"
-                    Margin="16"
-                    Click="OnAuthorizeButtonClick"></Button>
-        </ui:SimpleStackPanel>
-    </DockPanel>
+    <materialDesign:DialogHost x:Name="DialogHost">
+        <materialDesign:DialogHost.DialogContent>
+            <ui:SimpleStackPanel>
+                <Label x:Name="message" FontSize="16" Margin="8"></Label>
+                <Button Style="{StaticResource MaterialDesignFlatButton}"
+                        IsCancel="True"
+                        Margin="4"
+                        Content="Ок"
+                        Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}"
+                        HorizontalAlignment="Center">
+                </Button>
+            </ui:SimpleStackPanel>
 
+        </materialDesign:DialogHost.DialogContent>
+
+        <DockPanel HorizontalAlignment="Center"
+                   Height="260">
+            <ui:SimpleStackPanel VerticalAlignment="Center"
+                                 Width="368">
+                <ComboBox x:Name="serviceComboBox"
+                          Margin="16"
+                          materialDesign:HintAssist.Hint="Служба"
+                          materialDesign:HintAssist.IsFloating="True"
+                          FontSize="16" />
+                <TextBox x:Name="passwordTextTextBox"
+                         Margin="16"
+                         materialDesign:HintAssist.Hint="Пароль"
+                         materialDesign:HintAssist.IsFloating="True"
+                         FontSize="16" />
+                <Button Content="Войти для тестирования"
+                        Margin="16,16,16,0"
+                        Click="OnEnterTestModButtonClick"></Button>
+                <Button Content="Войти для редактирования"
+                        Margin="16"
+                        Click="OnEnterEditModButtonClick"></Button>
+
+            </ui:SimpleStackPanel>
+        </DockPanel>
+    </materialDesign:DialogHost>
 </Window>
