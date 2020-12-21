@@ -9,7 +9,7 @@ namespace Airport
     {
         public TestResult() { }
 
-        public TestResult(int employeeId, Employee employee, int themeId, Theme theme, DateTime datePass, bool tutorialWathed)
+        public TestResult(int employeeId, Employee employee, int themeId, Theme theme, DateTime datePass, bool tutorialWathed, int wrongAnswersCount)
         {
             EmployeeId = employeeId;
             Employee = employee;
@@ -17,9 +17,10 @@ namespace Airport
             Theme = theme;
             DatePass = datePass;
             TutorialWathed = tutorialWathed;
+            WrongAnswersCount = wrongAnswersCount;
         }
 
-        public TestResult(int employeeId, Employee employee, int themeId, Theme theme, int result, DateTime datePass, bool isPassed)
+        public TestResult(int employeeId, Employee employee, int themeId, Theme theme, int result, DateTime datePass, bool isPassed, int wrongAnswersCount)
         {
             EmployeeId = employeeId;
             Employee = employee;
@@ -28,6 +29,7 @@ namespace Airport
             Result = result;
             DatePass = datePass;
             IsPassed = isPassed;
+            WrongAnswersCount = wrongAnswersCount;
         }
 
         public int TestResultId { get; set; }
@@ -42,8 +44,10 @@ namespace Airport
         public bool IsPassed { get; set; }
         public DateTime DatePass { get; set; }
 
-        public virtual ICollection<UserAnswer> WrongAnswers { get; private set; } = new ObservableCollection<UserAnswer>();
+        public virtual ICollection<UserAnswer> Answers { get; private set; } = new ObservableCollection<UserAnswer>();
 
         public bool TutorialWathed { get; set; }
+
+        public int WrongAnswersCount { get; set; }
     }
 }

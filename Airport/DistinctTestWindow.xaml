@@ -82,7 +82,6 @@
                     Visibility="Collapsed"
                     BorderBrush="Gray"
                     Padding="4"
-                    Margin="16"
                     CornerRadius="4"
                     VerticalAlignment="Center"
                     HorizontalAlignment="Center">
@@ -100,7 +99,7 @@
 
             <ui:SimpleStackPanel x:Name="textAnswers"
                                  Visibility="Visible"
-                                 Height="550"
+                                 Height="600"
                                  Width="800"
                                  Margin="16,16,16,16">
 
@@ -155,8 +154,8 @@
             </ui:SimpleStackPanel>
 
             <WrapPanel x:Name="imageAnswers"
-                       Height="550"
-                       Width="800"
+                           Height="600"
+                           Width="800"
                        Margin="16"
                        HorizontalAlignment="Center"
                        Visibility="Collapsed">

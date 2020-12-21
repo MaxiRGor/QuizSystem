@@ -7,11 +7,11 @@ namespace Airport
 {
     public class Employee
     {
-        public Employee() { }
-        public Employee(DateTime now)
+        public Employee()
         {
-            RegistrationDate = now;
+            RegistrationDate = DateTime.Now;
         }
+
 
         public int EmployeeId { get; set; }
 

@@ -4,7 +4,6 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Airport"
-        SizeToContent="WidthAndHeight"
         mc:Ignorable="d"
         xmlns:ui="http://schemas.modernwpf.com/2019"
         ui:WindowHelper.UseModernWindowStyle="True"
@@ -14,22 +13,22 @@
         TextElement.FontWeight="Medium"
         TextElement.FontSize="14"
         FontFamily="{materialDesign:MaterialDesignFont}"
-        Title="Панель администратора"
         Loaded="Window_Loaded"
         Height="1080"
         Width="1920"
         WindowState="Maximized"
-        WindowStyle="None">
+        WindowStyle="None"
+        Title="Панель администратора">
 
     <Window.Resources>
         <CollectionViewSource x:Key="servicesViewSource" />
     </Window.Resources>
     <Grid>
+
         <DataGrid x:Name="servicesDataGrid"
                   AutoGenerateColumns="False"
                   Margin="16"
                   SelectionMode="Single"
-                  DockPanel.Dock="Left"
                   BorderThickness="2,2,2,2"
                   BorderBrush="Gray"
                   EnableRowVirtualization="True"
@@ -39,10 +38,11 @@
                   ItemStringFormat=""
                   HorizontalContentAlignment="Left"
                   HorizontalAlignment="Center"
-                  VerticalAlignment="Top"                 
+                  VerticalAlignment="Top"
                   VerticalContentAlignment="Top"
-                  Height="1000"
-                  CanUserDeleteRows="False">
+                  Height="1000                 "
+                  CanUserDeleteRows="False"
+                  Grid.RowSpan="2">
             <DataGrid.Columns>
                 <DataGridTextColumn Binding="{Binding AirportServiceId}"
                                     Header="#"

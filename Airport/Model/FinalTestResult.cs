@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Airport.Model;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace Airport
 {
@@ -8,13 +11,14 @@ namespace Airport
         {
         }
 
-        public FinalTestResult(int employeeId, Employee employee, int result, DateTime datePass, bool isPassed)
+        public FinalTestResult(int employeeId, Employee employee, int result, DateTime datePass, bool isPassed, int wrongAnswerCount)
         {
             EmployeeId = employeeId;
             Employee = employee;
             Result = result;
             DatePass = datePass;
             IsPassed = isPassed;
+            WrongAnswersCount = wrongAnswerCount;
         }
 
         public int FinalTestResultId { get; set; }
@@ -23,7 +27,12 @@ namespace Airport
 
         public int Result { get; set; }
         public DateTime DatePass { get; set; }
+
         public bool IsPassed { get; set; }
+
+        public virtual ICollection<FinalTestResultUserAnswer> Answers { get; private set; } = new ObservableCollection<FinalTestResultUserAnswer>();
+
+        public int WrongAnswersCount { get; set; }
 
     }
 }

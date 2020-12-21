@@ -126,7 +126,7 @@ namespace Airport
                         "Правильных ответов " + _right_answers + " из " + _questions.Count + ".";
                 DialogHost.IsOpen = true;
 
-                TestResult testResult = new TestResult(_employee.EmployeeId, _employee, _theme.ThemeId, _theme, result, DateTime.Now, result >= _theme.ResultToPass);
+                TestResult testResult = new TestResult(_employee.EmployeeId, _employee, _theme.ThemeId, _theme, result, DateTime.Now, result >= _theme.ResultToPass, _questions.Count - _right_answers);
                 ((TestSelectionWindow)Owner).AddTestResultToEmployee(_employee, testResult, _userAnswers);
             }
             else
@@ -140,13 +140,9 @@ namespace Airport
                     "Правильных ответов " + _right_answers + " из " + _questions.Count + ".";
                 DialogHost.IsOpen = true;
 
-                FinalTestResult finalTestResult = new FinalTestResult(_employee.EmployeeId, _employee, result, DateTime.Now, result >= _employee.Job.ResultInFinalTestToPass);
-                ((TestSelectionWindow)Owner).AddFinalTestResultToEmployee(_employee, finalTestResult);
+                FinalTestResult finalTestResult = new FinalTestResult(_employee.EmployeeId, _employee, result, DateTime.Now, result >= _employee.Job.ResultInFinalTestToPass, _questions.Count - _right_answers);
+                ((TestSelectionWindow)Owner).AddFinalTestResultToEmployee(_employee, finalTestResult, _userAnswers);
             }
-
-
-            //this.Close();
-
         }
 
         private void SetProgress()
@@ -198,7 +194,7 @@ namespace Airport
                     _right_answers++;
                 }
 
-                _userAnswers.Add(new UserAnswer("#" + current_question.QuestionId + ". " + current_question.Text, userAnswer, current_question.RightAnswer));
+                _userAnswers.Add(new UserAnswer(current_question, current_question.QuestionId, " Вопрос # " + current_question.QuestionId + ". " + current_question.Text, userAnswer, current_question.RightAnswer));
 
             }
             if (_questionIndex + 1 < _questions.Count)

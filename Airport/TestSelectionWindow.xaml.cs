@@ -160,7 +160,7 @@ namespace Airport
             {
                 Employee employee = (Employee)employeesDataGrid.SelectedCells[i].Item;
                 _context.Employees.Find(employee.EmployeeId)
-                    .TestResults.Add(new TestResult(employee.EmployeeId, employee, GetSelectedTheme().ThemeId, GetSelectedTheme(), DateTime.Now, true));
+                    .TestResults.Add(new TestResult(employee.EmployeeId, employee, GetSelectedTheme().ThemeId, GetSelectedTheme(), DateTime.Now, true, 0));
             }
 
             _context.SaveChanges();
@@ -228,9 +228,15 @@ namespace Airport
             return finalQuestions;
         }
 
-        internal void AddFinalTestResultToEmployee(Employee employee, FinalTestResult finalTestResult)
+        internal void AddFinalTestResultToEmployee(Employee employee, FinalTestResult finalTestResult, List<UserAnswer> userAnswers)
         {
             _context.Employees.Find(employee.EmployeeId).FinalTestResults.Add(finalTestResult);
+            _context.SaveChanges();
+            FinalTestResult finalTestResult1 = _context.Employees.Find(employee.EmployeeId).FinalTestResults.Last();
+            foreach (var item in userAnswers)
+            {
+                finalTestResult1.Answers.Add(new FinalTestResultUserAnswer(item.Question, item.QuestionId, item.QuestionText, item.UserAnswerInt, item.RightAnswerInt));
+            }
             _context.SaveChanges();
         }
 
@@ -284,7 +290,7 @@ namespace Airport
             TestResult testResult1 = _context.Employees.Find(employee.EmployeeId).TestResults.Last();
             foreach (var item in wrongAnswers)
             {
-                testResult1.WrongAnswers.Add(new Model.UserAnswer(item.Question, item.UserAnswerInt, item.RightAnswerInt));
+                testResult1.Answers.Add(new UserAnswer(item.Question, item.QuestionId, item.QuestionText, item.UserAnswerInt, item.RightAnswerInt));
             }
             _context.SaveChanges();
         }
@@ -308,55 +314,19 @@ namespace Airport
 
         private void ShowTestResultsClick(object sender, RoutedEventArgs e)
         {
-            try
-            {
-                Theme currentTheme = (Theme)GetSelectedObject(sender);
-                List<TestResult> testResults = _context.TestResults.Where(res => res.ThemeId == currentTheme.ThemeId).ToList();
-                List<ExcelModelTestResultsOfEmployeesList> excelModelTestResultsOfEmployeesLists = new List<ExcelModelTestResultsOfEmployeesList>();
-                foreach (TestResult testResult in testResults)
-                {
-                    excelModelTestResultsOfEmployeesLists.Add(new ExcelModelTestResultsOfEmployeesList(testResult.Employee.Name, testResult.TutorialWathed, testResult.DatePass, testResult.Result, testResult.IsPassed));
-                }
-                TestResultsWindow testResultsWindow = new TestResultsWindow(currentTheme.Category.Title + ", " + currentTheme.Title, excelModelTestResultsOfEmployeesLists);
-                testResultsWindow.Owner = this;
-                testResultsWindow.Show();
+            WindowCreator.ShowTestResultsOfCurrentThemeViaMenuClickOnThemesDataDrid(sender, _context, this);
 
-            }
-            catch
-            {
-
-            }
 
         }
 
         private void ShowFinalTestResultsClick(object sender, RoutedEventArgs e)
         {
-            try
-            {
-                Job currentJob = (Job)GetSelectedObject(sender);
-                List<FinalTestResult> testResults = _context.FinalTestResults.Where(res => res.Employee.Job == currentJob).ToList();
-                List<ExcelModelTestResultsOfEmployeesList> excelModelTestResultsOfEmployeesLists = new List<ExcelModelTestResultsOfEmployeesList>();
-                foreach (FinalTestResult testResult in testResults)
-                {
-                    excelModelTestResultsOfEmployeesLists.Add(new ExcelModelTestResultsOfEmployeesList(testResult.Employee.Name, false, testResult.DatePass, testResult.Result, testResult.IsPassed));
-                }
-                TestResultsWindow testResultsWindow = new TestResultsWindow(currentJob.Title + ", " + "Итоговый тест", excelModelTestResultsOfEmployeesLists);
-                testResultsWindow.Owner = this;
-                testResultsWindow.Show();
-
-            }
-            catch
-            {
-
-            }
+            WindowCreator.ShowFinalTestResultsViaMenuClickOnJobsGrid(sender,_context, this);
         }
 
-        private object GetSelectedObject(object sender)
+        private void ShowTestResultOfDistinctEmployeeClick(object sender, RoutedEventArgs e)
         {
-            var menuItem = (MenuItem)sender;
-            var contextMenu = (ContextMenu)menuItem.Parent;
-            var item = (DataGrid)contextMenu.PlacementTarget;
-            return item.SelectedCells[0].Item;
+            WindowCreator.ShowTestResultsViaMenuClickOnEmoployeeDataDrid(sender, _context, this);
         }
     }
 }

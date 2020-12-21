@@ -10,8 +10,10 @@ namespace Airport
         public int CategoryId { get; set; }
         public string Title { get; set; }
 
-        public int JobId { get; set; }
-        public virtual Job Job { get; set; }
+       // public int JobId { get; set; }
+        //public virtual Job Job { get; set; }
+
+        public virtual ICollection<Job> Jobs { get; private set; }
 
         public virtual ICollection<Theme> Themes { get; private set; } = new ObservableCollection<Theme>();
     }

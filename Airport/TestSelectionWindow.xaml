@@ -103,14 +103,19 @@
                       CanUserAddRows="False"
                       CanUserDeleteRows="False"
                       SelectionMode="Extended">
-                <DataGrid.Columns>
-                    <DataGridTextColumn Binding="{Binding Name}"
-                                        Header="Имя сотрудника"
-                                        IsReadOnly="True"
-                                        Width="350" />
-                </DataGrid.Columns>
-
-            </DataGrid>
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Binding="{Binding Name}"
+                                            Header="Имя сотрудника"
+                                            IsReadOnly="True"
+                                            Width="350" />
+                    </DataGrid.Columns>
+                    <DataGrid.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="Показать результаты тестов сотрудника"
+                                      Click="ShowTestResultOfDistinctEmployeeClick" />
+                        </ContextMenu>
+                    </DataGrid.ContextMenu>
+                </DataGrid>
 
 
             <DataGrid x:Name="categoriesDataGrid"
@@ -165,7 +170,7 @@
                     </DataGrid.Columns>
                         <DataGrid.ContextMenu>
                             <ContextMenu>
-                                <MenuItem Header="Показать результаты тестов"
+                                <MenuItem Header="Показать результаты теста сотрудников"
                                           Click="ShowTestResultsClick" />
                             </ContextMenu>
                         </DataGrid.ContextMenu>

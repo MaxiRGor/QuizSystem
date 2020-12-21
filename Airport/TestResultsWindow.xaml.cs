@@ -21,22 +21,26 @@ namespace Airport
     /// </summary>
     public partial class TestResultsWindow : Window
     {
+        private AppContext _appContext;
         private List<ExcelModelTestResultsOfEmployeesList> _excelModelTestResultsOfEmployeesLists;
         private string _testName;
+        private bool _isFinalTest;
 
-        public TestResultsWindow(string testName, List<ExcelModelTestResultsOfEmployeesList> excelModelTestResultsOfEmployeesLists)
+        public TestResultsWindow(bool isFinalTest, AppContext appContext, string testName, List<ExcelModelTestResultsOfEmployeesList> excelModelTestResultsOfEmployeesLists)
         {
             InitializeComponent();
+            _appContext = appContext;
             _excelModelTestResultsOfEmployeesLists = excelModelTestResultsOfEmployeesLists;
             _testName = testName;
             testTitle.Content = testName;
+            _isFinalTest = isFinalTest;
             PopulateDataGrid();
 
         }
 
         private void PopulateDataGrid()
         {
-           foreach(ExcelModelTestResultsOfEmployeesList item in _excelModelTestResultsOfEmployeesLists)
+            foreach (ExcelModelTestResultsOfEmployeesList item in _excelModelTestResultsOfEmployeesLists)
             {
                 dataGrid.Items.Add(item);
             }
@@ -44,47 +48,14 @@ namespace Airport
 
         private void CreateExcelFileButtonClick(object sender, RoutedEventArgs e)
         {
-            ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial;
-            using (var p = new ExcelPackage())
-            {
-                var ws = p.Workbook.Worksheets.Add("Sheet1");
-
-                ws.Cells["A1"].Value = _testName;
-                ws.Cells["A1"].Style.Font.Size = 24;
-                ws.Cells["A1"].Style.Font.Bold = true;
-
-                ws.Cells["A2"].Value = "Сотрудник";
-                ws.Cells["B2"].Value = "Отметка обучения";
-                ws.Cells["C2"].Value = "Дата прохождения";
-                ws.Cells["D2"].Value = "Результат";
-                ws.Cells["E2"].Value = "Допуск";
-
-                ws.Cells["A1:E1"].Merge = true;
-                ws.Cells["A2:E2"].Style.Font.Bold = true;
-
-                ws.Cells[3, 1].LoadFromCollection(_excelModelTestResultsOfEmployeesLists);
-                SaveAndStartExcelDocument(ws, p);
-
-            }
+            ExcelBuilder.CreateExcelFileButtonClick(_testName, _excelModelTestResultsOfEmployeesLists, true, "Сотрудник", "Отметка обучения", "Дата прохождения"
+                , "Результат", "Количество вопросов", "Количество верных ответов", "Допуск");
         }
 
-        private void SaveAndStartExcelDocument(ExcelWorksheet ws, ExcelPackage p)
+        private void ShowEmployeeAnswersButtonClick(object sender, RoutedEventArgs e)
         {
-            ws.Cells.AutoFitColumns();
-
-            string directory = "excelData";
-            Directory.CreateDirectory(directory);
-            string fileName = System.IO.Path.GetFileName(DateTime.Now.Ticks + ".xlsx");
-            fileName = System.IO.Path.Combine(directory, fileName);
-            p.SaveAs(new FileInfo(fileName));
-
-            new Process
-            {
-                StartInfo = new ProcessStartInfo(fileName)
-                {
-                    UseShellExecute = true
-                }
-            }.Start();
+            WindowCreator.ShowAnswersOfSelectedTestViaMenuClickOnTestResultsDataGrid(sender, _appContext, _isFinalTest, this);
         }
+
     }
 }

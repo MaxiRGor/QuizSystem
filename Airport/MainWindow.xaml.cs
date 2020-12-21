@@ -53,6 +53,7 @@ namespace Airport
             _context.AirportServices.Load();
             servicesViewSource.Source = _context.AirportServices.Local.ToObservableCollection();
             servicesViewSource.Filter += ServicesViewSource_Filter;
+            SetJobsCombobox();
         }
 
         private void ServicesViewSource_Filter(object sender, FilterEventArgs e)
@@ -74,7 +75,7 @@ namespace Airport
         private void ButtonSaveClick(object sender, RoutedEventArgs e)
         {
             _context.SaveChanges();
-            RefreshGrids();
+            RefreshElements();
 
             if (questionDetails.Visibility == Visibility.Visible)
             {
@@ -82,23 +83,98 @@ namespace Airport
             }
         }
 
-        private void RefreshGrids()
+        private void RefreshElements()
         {
-            jobsDataGrid1.Items.Refresh();
-            jobsDataGrid2.Items.Refresh();
-            categoriesDataGrid.Items.Refresh();
             try
             {
+                categoriesDataGrid.Items.Refresh();
+                jobsDataGrid1.Items.Refresh();
+                jobsDataGrid2.Items.Refresh();
                 themesDataGrid.Items.Refresh();
+                questionsDataGrid.Items.Refresh();
+                employeesDataGrid.Items.Refresh();
+                testResultsDataGrid.Items.Refresh();
+                SetJobsCombobox();
             }
             catch
             {
 
             }
-            questionsDataGrid.Items.Refresh();
-            employeesDataGrid.Items.Refresh();
-            testResultsDataGrid.Items.Refresh();
+
         }
+
+        private void SetJobsCombobox()
+        {
+            AddJobToCategoryMenu.Items.Clear();
+            Job[] jobs = _context.Jobs.ToArray();
+            foreach (Job job in jobs)
+            {
+                MenuItem menuItem = new MenuItem();
+                menuItem.Header = job.Title;
+                menuItem.Tag = job.JobId;
+                menuItem.Click += new RoutedEventHandler(OnAddingCategoryToNewJob);
+                AddJobToCategoryMenu.Items.Add(menuItem);
+            }
+        }
+
+        public void OnAddingCategoryToNewJob(object sender, RoutedEventArgs e)
+        {
+            Category category = GetSelectedCategory();
+            Job job = GetSelectedJob();
+            if (category != null)
+            {
+                int.TryParse(((MenuItem)sender).Tag.ToString(), out int nextJobId);
+                if (job != null && nextJobId != 0)
+                {
+                    if (job.JobId == nextJobId)
+                    {
+                        message.Content = "Выберите должность, которая\n отличается от уже выбранной";
+                        DialogHost.IsOpen = true;
+                    }
+                    else
+                    {
+                        if (_context.Jobs.Find(nextJobId).Categories.Contains(category)){
+                            message.Content = "Выберите должность уже содержит выбранную категорию";
+                            DialogHost.IsOpen = true;
+                        }
+                        else
+                        {
+                            _context.Jobs.Find(nextJobId).Categories.Add(category);
+                            _context.SaveChanges();
+                            RefreshElements();
+                        }
+
+                    }
+                }
+            }
+        }
+
+        private Category GetSelectedCategory()
+        {
+            try
+            {
+                return (Category)categoriesDataGrid.SelectedCells[0].Item;
+
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        private Job GetSelectedJob()
+        {
+            try
+            {
+                return (Job)jobsDataGrid1.SelectedCells[0].Item;
+
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
 
         private void SaveQuestion()
         {
@@ -174,7 +250,7 @@ namespace Airport
         {
             try
             {
-                Theme currentTheme = (Theme)GetSelectedObject(sender);
+                Theme currentTheme = (Theme)DataGridHelper.GetSelectedObject(sender);
 
                 if (currentTheme.ThemeId == 0)
                 {
@@ -197,17 +273,17 @@ namespace Airport
             }
             catch
             {
-                message.Content = "Сначала введите тему, к которой добавить обучение,\n и сохраните изменения";
-                DialogHost.IsOpen = true;
-            }
-        }
+                try
+                {
 
-        private object GetSelectedObject(object sender)
-        {
-            var menuItem = (MenuItem)sender;
-            var contextMenu = (ContextMenu)menuItem.Parent;
-            var item = (DataGrid)contextMenu.PlacementTarget;
-            return item.SelectedCells[0].Item;
+                    message.Content = "Сначала введите тему, к которой добавить обучение,\n и сохраните изменения";
+                    DialogHost.IsOpen = true;
+                }
+                catch
+                {
+
+                }
+            }
         }
 
         private string GetCopiedFileName(string newDir, string fileName)
@@ -243,7 +319,7 @@ namespace Airport
         {
             try
             {
-                Theme currentTheme = (Theme)GetSelectedObject(sender);
+                Theme currentTheme = (Theme)DataGridHelper.GetSelectedObject(sender);
                 new Process
                 {
                     StartInfo = new ProcessStartInfo(currentTheme.TutorialPath)
@@ -254,8 +330,16 @@ namespace Airport
             }
             catch
             {
-                message.Content = "Нельзя открыть файл";
-                DialogHost.IsOpen = true;
+                try
+                {
+                    message.Content = "Нельзя открыть файл";
+                    DialogHost.IsOpen = true;
+                }
+                catch
+                {
+
+                }
+
             }
         }
 
@@ -354,10 +438,6 @@ namespace Airport
             }
         }
 
-        private void OnEmployeeCreated(object sender, AddingNewItemEventArgs e)
-        {
-            e.NewItem = new Employee(DateTime.Now);
-        }
 
         public void ShowDeleteRowDialog(object sender, KeyEventArgs e)
         {
@@ -377,122 +457,6 @@ namespace Airport
             }
         }
 
-
-        private void EmployeesSelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            Employee employee = GetSelectedEmployee();
-            if (employee != null)
-            {
-                employeeNameLabel.Content = employee.Name;
-                if (employee.TestResults.Count == 0)
-                {
-                    testTitleLabel.Content = "Нет пройденных тестов";
-                    createExcelFileButton.IsEnabled = false;
-                }
-                else
-                {
-
-                    testTitleLabel.Content = "Количество пройденных тестов = " + employee.TestResults.Count;
-                    createExcelFileButton.IsEnabled = true;
-                }
-            }
-            else
-            {
-                employeeNameLabel.Content = "Сотрудник не выбран";
-                testTitleLabel.Content = "Нет пройденных тестов";
-                createExcelFileButton.IsEnabled = false;
-            }
-
-        }
-
-        private void ThemesSelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            TestResult testResult = GetSelectedTestResult();
-            testTitleLabel.Content = testResult == null ? "Нет пройденных тестов" : "Количество пройденных тестов";
-        }
-
-        private Employee GetSelectedEmployee()
-        {
-            try
-            {
-                return (Employee)employeesDataGrid.SelectedCells[0].Item;
-
-            }
-            catch
-            {
-                return null;
-            }
-        }
-
-        private TestResult GetSelectedTestResult()
-        {
-            try
-            {
-                return (TestResult)testResultsDataGrid.SelectedCells[0].Item;
-
-            }
-            catch
-            {
-                return null;
-            }
-        }
-
-        private void CreateExcelFileButtonClick(object sender, RoutedEventArgs e)
-        {
-            Employee employee = GetSelectedEmployee();
-
-            if (employee != null)
-            {
-
-                ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial;
-                using (var p = new ExcelPackage())
-                {
-                    List<ExcelModeTestResultOfDistinctEmployee> excelModeTestResults = new List<ExcelModeTestResultOfDistinctEmployee>();
-                    foreach(TestResult testResult in employee.TestResults)
-                    {
-                        excelModeTestResults.Add(new ExcelModeTestResultOfDistinctEmployee(testResult.Theme.Title, testResult.TutorialWathed, testResult.DatePass, testResult.Result, testResult.IsPassed));
-                    }
-                    var ws = p.Workbook.Worksheets.Add("Sheet1");
-
-                    ws.Cells["A1"].Value = employee.Name + ", " + employee.Job.Title;
-                    ws.Cells["A1"].Style.Font.Size = 24;
-                    ws.Cells["A1"].Style.Font.Bold = true;    
-
-                    ws.Cells["A2"].Value = "Название теста";
-                    ws.Cells["B2"].Value = "Отметка обучения";
-                    ws.Cells["C2"].Value = "Дата";
-                    ws.Cells["D2"].Value = "Результат";
-                    ws.Cells["E2"].Value = "Допуск";
-
-                    ws.Cells["A1:E1"].Merge = true;
-                    ws.Cells["A2:E2"].Style.Font.Bold = true;
-
-                    ws.Cells[3, 1].LoadFromCollection(excelModeTestResults);
-                    SaveAndStartExcelDocument(ws, p);
-
-                }
-            }
-        }
-
-        private void SaveAndStartExcelDocument(ExcelWorksheet ws, ExcelPackage p)
-        {
-            ws.Cells.AutoFitColumns();
-
-            string directory = "excelData";
-            Directory.CreateDirectory(directory);
-            string fileName = System.IO.Path.GetFileName(DateTime.Now.Ticks + ".xlsx");
-            fileName = System.IO.Path.Combine(directory, fileName);
-            p.SaveAs(new FileInfo(fileName));
-
-            new Process
-            {
-                StartInfo = new ProcessStartInfo(fileName)
-                {
-                    UseShellExecute = true
-                }
-            }.Start();
-        }
-
         private void OpenSelectTestWindowButtonClick(object sender, RoutedEventArgs e)
         {
             _context.SaveChanges();
@@ -504,46 +468,34 @@ namespace Airport
 
         private void ShowTestResultsClick(object sender, RoutedEventArgs e)
         {
-            try
-            {
-                Theme currentTheme = (Theme)GetSelectedObject(sender);
-                List<TestResult> testResults = _context.TestResults.Where(res => res.ThemeId == currentTheme.ThemeId).ToList();
-                List<ExcelModelTestResultsOfEmployeesList> excelModelTestResultsOfEmployeesLists = new List<ExcelModelTestResultsOfEmployeesList>();
-                foreach(TestResult testResult in testResults)
-                {
-                    excelModelTestResultsOfEmployeesLists.Add(new ExcelModelTestResultsOfEmployeesList(testResult.Employee.Name, testResult.TutorialWathed, testResult.DatePass, testResult.Result, testResult.IsPassed));
-                }
-                TestResultsWindow testResultsWindow = new TestResultsWindow(currentTheme.Category.Title + ", " + currentTheme.Title, excelModelTestResultsOfEmployeesLists);
-                testResultsWindow.Owner = this;
-                testResultsWindow.Show();
-
-            }
-            catch
-            {
-
-            }
-
+            WindowCreator.ShowTestResultsOfCurrentThemeViaMenuClickOnThemesDataDrid(sender, _context, this);
         }
 
         private void ShowFinalTestResultsClick(object sender, RoutedEventArgs e)
         {
-            try
-            {
-                Job currentJob = (Job)GetSelectedObject(sender);
-                List<FinalTestResult> testResults = _context.FinalTestResults.Where(res => res.Employee.Job == currentJob).ToList();
-                List<ExcelModelTestResultsOfEmployeesList> excelModelTestResultsOfEmployeesLists = new List<ExcelModelTestResultsOfEmployeesList>();
-                foreach (FinalTestResult testResult in testResults)
-                {
-                    excelModelTestResultsOfEmployeesLists.Add(new ExcelModelTestResultsOfEmployeesList(testResult.Employee.Name, false, testResult.DatePass, testResult.Result, testResult.IsPassed));
-                }
-                TestResultsWindow testResultsWindow = new TestResultsWindow(currentJob.Title + ", " + "Итоговый тест", excelModelTestResultsOfEmployeesLists);
-                testResultsWindow.Owner = this;
-                testResultsWindow.Show();
+            WindowCreator.ShowFinalTestResultsViaMenuClickOnJobsGrid(sender, _context, this);
+        }
 
-            }
-            catch
-            {
 
+        private void CreateExcelFileOfEmployeeTestResultsButtonClick(object sender, RoutedEventArgs e)
+        {
+            ExcelBuilder.CreateExcelFileOfEmployeeTestResultsViaMenuClickOnEmployeeGrid(sender);
+        }
+
+        private void ShowEmployeeAnswersButtonClick(object sender, RoutedEventArgs e)
+        {
+            WindowCreator.ShowAnswersOfSelectedTestViaMenuClickOnTestResultsDataGrid(sender, _context, false, this);
+        }
+
+        private void DeleteCategoryFromCurrentJob(object sender, RoutedEventArgs e)
+        {
+            Category category = GetSelectedCategory();
+            Job job = GetSelectedJob();
+            if (category != null && job != null)
+            {
+                _context.Jobs.Find(job.JobId).Categories.Remove(category);
+                _context.SaveChanges();
+                RefreshElements();
             }
         }
     }

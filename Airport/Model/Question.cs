@@ -4,6 +4,7 @@
     {
         public Question()
         {
+            RightAnswer = 1;
             Cost = 1;
         }
 
