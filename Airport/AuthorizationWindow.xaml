@@ -22,7 +22,9 @@
     <materialDesign:DialogHost x:Name="DialogHost">
         <materialDesign:DialogHost.DialogContent>
             <ui:SimpleStackPanel>
-                <Label x:Name="message" FontSize="16" Margin="8"></Label>
+                <Label x:Name="message"
+                       FontSize="16"
+                       Margin="8"></Label>
                 <Button Style="{StaticResource MaterialDesignFlatButton}"
                         IsCancel="True"
                         Margin="4"
@@ -38,16 +40,30 @@
                    Height="260">
             <ui:SimpleStackPanel VerticalAlignment="Center"
                                  Width="368">
-                <ComboBox x:Name="serviceComboBox"
-                          Margin="16"
-                          materialDesign:HintAssist.Hint="Служба"
-                          materialDesign:HintAssist.IsFloating="True"
-                          FontSize="16" />
-                <TextBox x:Name="passwordTextTextBox"
-                         Margin="16"
-                         materialDesign:HintAssist.Hint="Пароль"
-                         materialDesign:HintAssist.IsFloating="True"
-                         FontSize="16" />
+                <DockPanel HorizontalAlignment="Center">
+                    <ComboBox x:Name="serviceComboBox"
+                              DockPanel.Dock="Left"
+                              materialDesign:HintAssist.Hint="Служба"
+                              materialDesign:HintAssist.IsFloating="True"
+                              FontSize="16"
+                              Width="290" />
+
+                    <Button Width=" 40"
+                            Height=" 40"
+                            DockPanel.Dock="Right"
+                            Margin="8,0,0,0"
+                            Click="Window_Loaded"
+                            Padding="0,0,0,0">
+                        <Image Source="/refresh.png"
+                               Width="25"
+                               Height="25" />
+                    </Button>
+                </DockPanel>
+                <PasswordBox x:Name="passwordTextTextBox"
+                             Margin="16"
+                             materialDesign:HintAssist.Hint="Пароль"
+                             materialDesign:HintAssist.IsFloating="True"
+                             FontSize="16" />
                 <Button Content="Войти для тестирования"
                         Margin="16,16,16,0"
                         Click="OnEnterTestModButtonClick"></Button>

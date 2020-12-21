@@ -5,11 +5,21 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <UseWPF>true</UseWPF>
     <ApplicationIcon>favicon.ico</ApplicationIcon>
+    <Platforms>AnyCPU;x86</Platforms>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
+    <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
 
   <ItemGroup>
     <None Remove="20190924_174909.jpg" />
     <None Remove="images\150_output-onlinepngtools.png" />
+    <None Remove="refresh.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -24,6 +34,7 @@
     <Resource Include="images\150_output-onlinepngtools.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
+    <Resource Include="refresh.png" />
   </ItemGroup>
 
 </Project>

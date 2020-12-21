@@ -1,20 +1,13 @@
-﻿
-
-using MaterialDesignThemes.Wpf;
+﻿using MaterialDesignThemes.Wpf;
 using Microsoft.EntityFrameworkCore;
 using System;
-using System.Collections.Generic;
+using System.Collections;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
-using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace Airport
 {
@@ -32,12 +25,12 @@ namespace Airport
             InitializeComponent();
         }
 
-        private void Window_Loaded(object sender, RoutedEventArgs e)
+        public void Window_Loaded(object sender, RoutedEventArgs e)
         {
             _context.Database.EnsureCreated();
             _context.AirportServices.Load();
 
-            if (_context.AirportServices.CountAsync().Result == 0)
+            if (_context.AirportServices.Count() == 0)
             {
                 _context.AirportServices.Add(new AirportService(adminName, adminPassword));
                 _context.SaveChanges();
@@ -60,7 +53,7 @@ namespace Airport
             if (serviceComboBox.SelectedItem != null)
             {
                 AirportService currentService = _context.AirportServices.Local.Single(s => s.AirportServiceId == int.Parse(serviceComboBox.SelectedValue.ToString()));
-                if (currentService.PasswordForRedacting == passwordTextTextBox.Text)
+                if (currentService.PasswordForRedacting == passwordTextTextBox.Password)
                 {
                     if (currentService.AirportServiceId == 1)
                     {
@@ -89,7 +82,7 @@ namespace Airport
             if (serviceComboBox.SelectedItem != null)
             {
                 AirportService currentService = _context.AirportServices.Local.Single(s => s.AirportServiceId == int.Parse(serviceComboBox.SelectedValue.ToString()));
-                if (currentService.PasswordForTesting == passwordTextTextBox.Text)
+                if (currentService.PasswordForTesting == passwordTextTextBox.Password)
                 {
                     if (currentService.AirportServiceId == 1)
                     {

@@ -197,9 +197,6 @@ namespace Airport
 
                 _userAnswers.Add(new UserAnswer(current_question, current_question.QuestionId, " Вопрос # " + current_question.QuestionId + ". " + current_question.Text, userAnswer, current_question.RightAnswer));
 
-            }
-            else
-            {
                 if (_questionIndex + 1 < _questions.Count)
                 {
                     _questionIndex++;
@@ -209,6 +206,7 @@ namespace Airport
                 {
                     CreateTestResult();
                 }
+
             }
         }
 
