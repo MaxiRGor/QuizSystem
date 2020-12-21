@@ -184,9 +184,10 @@ namespace Airport
 
         private void CheckAnswer(object sender, RoutedEventArgs e)
         {
-            Question current_question = _questions[_questionIndex];
             if (!answerTextBox.Text.IsNullOrEmpty())
             {
+                Question current_question = _questions[_questionIndex];
+
                 int userAnswer = int.Parse(answerTextBox.Text.ToString());
                 if (current_question.RightAnswer == userAnswer)
                 {
@@ -197,14 +198,17 @@ namespace Airport
                 _userAnswers.Add(new UserAnswer(current_question, current_question.QuestionId, " Вопрос # " + current_question.QuestionId + ". " + current_question.Text, userAnswer, current_question.RightAnswer));
 
             }
-            if (_questionIndex + 1 < _questions.Count)
-            {
-                _questionIndex++;
-                SetView();
-            }
             else
             {
-                CreateTestResult();
+                if (_questionIndex + 1 < _questions.Count)
+                {
+                    _questionIndex++;
+                    SetView();
+                }
+                else
+                {
+                    CreateTestResult();
+                }
             }
         }
 
