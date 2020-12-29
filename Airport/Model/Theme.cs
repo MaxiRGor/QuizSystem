@@ -8,14 +8,14 @@ namespace Airport
         public Theme()
         {
             NumberOfQuestions = 10;
-            ResultToPass = 75;
+            ResultToPass = 80;
             NumberOfFinalQuestions = 0;
         }
 
         public Theme(string title)
         {
             Title = title;
-            ResultToPass = 75;
+            ResultToPass = 80;
         }
 
         public int ThemeId { get; set; }
