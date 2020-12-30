@@ -8,7 +8,7 @@ namespace Airport
     {
         public Job()
         {
-            ResultInFinalTestToPass = 75;
+            ResultInFinalTestToPass = 80;
         }
 
         public int JobId { get; set; }
