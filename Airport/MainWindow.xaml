@@ -75,8 +75,8 @@
                                 <DataGrid x:Name="jobsDataGrid1"
                                           AutoGenerateColumns="False"
                                           Margin="16"
-                                          Width="550"
-                                          Height="400"
+                                          Width="300"
+                                          Height="350"
                                           PreviewKeyDown="ShowDeleteRowDialog"
                                           DockPanel.Dock="Left"
                                           BorderThickness="2,2,2,2"
@@ -87,21 +87,21 @@
                                           InputScope="Xml"
                                           ItemStringFormat=""
                                           HorizontalContentAlignment="Left"
-                                          HorizontalAlignment="Left"
-                                          VerticalAlignment="Stretch"
                                           VerticalContentAlignment="Stretch">
                                     <DataGrid.Columns>
                                         <DataGridTextColumn Binding="{Binding JobId}"
                                                             Header="#"
                                                             IsReadOnly="True" />
                                         <DataGridTextColumn Binding="{Binding Title}"
-                                                            Header="Должность"
+                                                            Header="№ группы"
                                                             Width="*" />
                                         <DataGridTextColumn Binding="{Binding ResultInFinalTestToPass, ValidatesOnExceptions=True, StringFormat=g}"
                                                             Header="Зачёт в итоговом, %"
-                                                            Width="SizeToHeader" />
+                                                            Width="SizeToHeader"
+                                                            Visibility="Collapsed" />
                                         <DataGridTextColumn Binding="{Binding Categories,Converter={StaticResource finalQuestionCounter}}"
                                                             IsReadOnly="True"
+                                                            Visibility="Collapsed"
                                                             Header="?? в итоговом"
                                                             Width="SizeToHeader" />
                                     </DataGrid.Columns>
@@ -117,15 +117,13 @@
                                           AutoGenerateColumns="False"
                                           PreviewKeyDown="ShowDeleteRowDialog"
                                           Margin="16,16,16,16"
-                                          Width="350"
+                                          Width="526"
                                           BorderThickness="2,2,2,2"
                                           BorderBrush="Gray"
                                           EnableRowVirtualization="True"
                                           ItemsSource="{Binding Source={StaticResource categoriesViewSource}}"
                                           RowDetailsVisibilityMode="VisibleWhenSelected"
                                           HorizontalContentAlignment="Left"
-                                          HorizontalAlignment="Left"
-                                          VerticalAlignment="Stretch"
                                           VerticalContentAlignment="Stretch">
                                     <DataGrid.Columns>
 
@@ -133,7 +131,7 @@
                                                             Header="#"
                                                             IsReadOnly="True" />
                                         <DataGridTextColumn Binding="{Binding Title}"
-                                                            Header="Категория вопросов"
+                                                            Header="Категория тестов"
                                                             Width="auto" />
                                     </DataGrid.Columns>
                                     <DataGrid.ContextMenu>
@@ -155,7 +153,6 @@
                                 <DataGrid x:Name="themesDataGrid"
                                           AutoGenerateColumns="False"
                                           Margin="16"
-                                          VerticalAlignment="Stretch"
                                           PreviewKeyDown="ShowDeleteRowDialog"
                                           DockPanel.Dock="Right"
                                           BorderThickness="2,2,2,2"
@@ -163,27 +160,30 @@
                                           ItemsSource="{Binding Source={StaticResource themesViewSource}}"
                                           RowDetailsVisibilityMode="VisibleWhenSelected"
                                           HorizontalContentAlignment="Stretch"
-                                          HorizontalAlignment="Stretch"
-                                          VerticalContentAlignment="Stretch">
+                                          VerticalContentAlignment="Stretch"
+                                          Width="941">
                                     <DataGrid.Columns>
                                         <DataGridTextColumn Binding="{Binding ThemeId}"
                                                             Header="#"
                                                             IsReadOnly="True" />
                                         <DataGridTextColumn Binding="{Binding Title}"
                                                             Header="Название теста"
-                                                            Width="350" />
+                                                            Width="600" />
                                         <DataGridTextColumn Binding="{Binding NumberOfQuestions, ValidatesOnExceptions=True, StringFormat=g}"
                                                             Header="?? в билете"
+                                                            Visibility="Collapsed"
                                                             Width="SizeToHeader" />
 
                                         <DataGridTextColumn Binding="{Binding ResultToPass, ValidatesOnExceptions=True, StringFormat=g}"
-                                                            Header="Зачёт, %"
+                                                            Header="Зачёт при X правильных ответов, %"
                                                             Width="SizeToHeader" />
                                         <DataGridTextColumn Binding="{Binding NumberOfFinalQuestions, ValidatesOnExceptions=True, StringFormat=g}"
                                                             Header="Итоговых ??"
+                                                            Visibility="Collapsed"
                                                             Width="SizeToHeader" />
                                         <DataGridTextColumn Binding="{Binding TutorialPath}"
                                                             IsReadOnly="True"
+                                                            Visibility="Collapsed"
                                                             Header="Путь к обучению"
                                                             Width="*">
                                         </DataGridTextColumn>
@@ -208,7 +208,7 @@
                                           Height="408"
                                           AutoGenerateColumns="False"
                                           Margin="16"
-                                          Width="250"
+                                          Width="450"
                                           PreviewKeyDown="ShowDeleteRowDialog"
                                           BorderThickness="2,2,2,2"
                                           DockPanel.Dock="Left"
@@ -247,7 +247,7 @@
                                                                  Margin="4">
 
                                                 <DockPanel VerticalAlignment="Center">
-                                                    <Label Content="#"
+                                                    <Label Content="Детали вопроса #"
                                                            HorizontalContentAlignment="Stretch"
                                                            HorizontalAlignment="Stretch"
                                                            VerticalContentAlignment="Center"
@@ -282,6 +282,7 @@
                                                              VerticalContentAlignment="Center"
                                                              PreviewTextInput="OneDigitNumberValidationTextBox"></TextBox>
                                                     <TextBox  x:Name="costTextBox"
+                                                              Visibility="Collapsed"
                                                               Margin="16,0,0,0"
                                                               materialDesign:HintAssist.Hint="Стоимость ответа"
                                                               materialDesign:HintAssist.IsFloating="True"
@@ -290,6 +291,7 @@
                                                               PreviewTextInput="NumberValidationTextBox"></TextBox>
 
                                                     <ui:SimpleStackPanel Orientation="Horizontal"
+                                                                         Visibility="Collapsed"
                                                                          Margin="16,0,0,0"
                                                                          VerticalAlignment="Bottom">
                                                         <Label  Margin="8,000"
@@ -300,6 +302,7 @@
                                                     </ui:SimpleStackPanel>
 
                                                     <ui:SimpleStackPanel Orientation="Horizontal"
+                                                                         Visibility="Collapsed"
                                                                          Margin="16,0,0,0"
                                                                          VerticalAlignment="Bottom">
                                                         <Label  Margin="8,000"
@@ -478,7 +481,7 @@
                 <TabItem x:Name="employeesTab">
                     <TabItem.Header>
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Margin="2">Сотрудники</TextBlock>
+                            <TextBlock Margin="2">Студенты</TextBlock>
                         </StackPanel>
                     </TabItem.Header>
                     <TabItem.Content>
@@ -505,7 +508,7 @@
                                                             Header="#"
                                                             IsReadOnly="True" />
                                         <DataGridTextColumn Binding="{Binding Title}"
-                                                            Header="Должность"
+                                                            Header="№ группы"
                                                             Width="220" />
                                         <DataGridTextColumn Binding="{Binding Categories,Converter={StaticResource countConverter}}"
                                                             Header="Кол-во тестов"
@@ -531,7 +534,7 @@
                                           ItemsSource="{Binding Source={StaticResource employeesViewSource}}"
                                           RowDetailsVisibilityMode="VisibleWhenSelected"
                                           InputScope="Xml"
-                                          Width="500"
+                                          Width="700"
                                           ItemStringFormat=""
                                           HorizontalAlignment="Left">
                                     <DataGrid.Columns>
@@ -539,8 +542,11 @@
                                                             Header="#"
                                                             IsReadOnly="True" />
                                         <DataGridTextColumn Binding="{Binding Name}"
-                                                            Header="Имя сотрудника"
-                                                            Width="300" />
+                                                            Header="Имя студента"
+                                                            Width="320" />
+                                        <DataGridTextColumn Binding="{Binding StudId}"
+                                                            Header="# cтуд. билета"
+                                                            Width="auto" />
                                         <DataGridTextColumn Binding="{Binding RegistrationDate, StringFormat=\{0:dd.MM.yyyy \}}"
                                                             Header="Дата регистрации"
                                                             IsReadOnly="True"
@@ -560,7 +566,7 @@
 
                                     <DataGrid x:Name="testResultsDataGrid"
                                               AutoGenerateColumns="False"
-                                              Margin="16"
+                                              Margin="0,16,0,16"
                                               DockPanel.Dock="Right"
                                               PreviewKeyDown="ShowDeleteRowDialog"
                                               Height="350"
@@ -572,7 +578,7 @@
                                               InputScope="Xml"
                                               ItemStringFormat=""
                                               CanUserAddRows="False"
-                                              Width="924">
+                                              Width="730">
                                         <DataGrid.Columns>
                                             <DataGridTextColumn Binding="{Binding TestResultId}"
                                                                 Header="#"
@@ -580,13 +586,15 @@
                                             <DataGridTextColumn Binding="{Binding Theme.Title}"
                                                                 Header="Пройденный тест"
                                                                 IsReadOnly="True"
-                                                                Width="300" />
+                                                                Width="350" />
                                             <DataGridCheckBoxColumn  Binding="{Binding IsPassed}"
                                                                      Header="Допуск"
+                                                                     Visibility="Collapsed"
                                                                      IsReadOnly="True"
                                                                      Width="SizeToHeader" />
                                             <DataGridCheckBoxColumn  Binding="{Binding TutorialWathed}"
                                                                      Header="Отметка обучения"
+                                                                     Visibility="Collapsed"
                                                                      IsReadOnly="True"
                                                                      Width="SizeToHeader" />
                                             <DataGridTextColumn Binding="{Binding DatePass, StringFormat=\{0:dd.MM.yyyy \}}"
@@ -613,7 +621,7 @@
 
                                     <DataGrid x:Name="wrongAnswersDataGrid"
                                               AutoGenerateColumns="False"
-                                              Margin="16"
+                                              Margin="0,16,0,16"
                                               IsReadOnly="true"
                                               DockPanel.Dock="Right"
                                               PreviewKeyDown="ShowDeleteRowDialog"
@@ -626,7 +634,7 @@
                                               InputScope="Xml"
                                               ItemStringFormat=""
                                               CanUserAddRows="False"
-                                              Width="924">
+                                              Width="727">
                                         <DataGrid.Columns>
                                             <DataGridTextColumn Header="Вопрос"
                                                                 Binding="{Binding QuestionText}"

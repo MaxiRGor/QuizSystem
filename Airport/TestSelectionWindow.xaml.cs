@@ -67,14 +67,15 @@ namespace Airport
             Employee employee = GetSelectedEmployee();
             if (employee != null)
             {
-                if (employeesDataGrid.SelectedCells.Count == 1)
+                employeeNameLabel.Content = employee.Name;
+/*                if (employeesDataGrid.SelectedCells.Count == 1)
                 {
                     employeeNameLabel.Content = employee.Name;
                 }
                 else
                 {
                     employeeNameLabel.Content = "КОЛИЧЕСТВО СОТРУДНИКОВ ВЫБРАНО = " + employeesDataGrid.SelectedCells.Count;
-                }
+                }*/
 
             }
             else
@@ -171,8 +172,8 @@ namespace Airport
             if (EmployeeAndTestSelected())
             {
 
-                if (employeesDataGrid.SelectedCells.Count == 1)
-                {
+                //if (employeesDataGrid.SelectedCells.Count == 1)
+               // {
                     if ((bool)IsTestFinalCheckBox.IsChecked)
                     {
                         List<Question> finalQuestions = GetFinalQuestions(GetSelectedEmployee());
@@ -204,12 +205,12 @@ namespace Airport
                         }
 
                     }
-                }
+/*                }
                 else
                 {
                     message.Content = "Выберите только одного сотрудника";
                     DialogHost.IsOpen = true;
-                }
+                }*/
 
             }
         }

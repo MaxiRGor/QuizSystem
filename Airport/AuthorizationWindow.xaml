@@ -43,7 +43,7 @@
                 <DockPanel HorizontalAlignment="Center">
                     <ComboBox x:Name="serviceComboBox"
                               DockPanel.Dock="Left"
-                              materialDesign:HintAssist.Hint="Служба"
+                              materialDesign:HintAssist.Hint="Дисциплина"
                               materialDesign:HintAssist.IsFloating="True"
                               FontSize="16"
                               Width="290" />
